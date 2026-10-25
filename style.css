@@ -78,6 +78,7 @@ p, li { margin: 0 0 12px; }
 /* tui captures: 84 columns, scaled to fit the column */
 .win { margin: 0 0 8px; border: 1px solid var(--ink); container-type: inline-size; }
 .win figcaption { display: flex; justify-content: space-between; gap: 16px; padding: 5px 12px; border-bottom: 1px solid var(--ink); font-size: 12px; color: var(--faint); }
+.shot { display: block; width: 100%; height: auto; }
 .tui {
   margin: 0;
   padding: 12px 0;

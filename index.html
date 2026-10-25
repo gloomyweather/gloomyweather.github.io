@@ -17,7 +17,7 @@
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <div class="page">
@@ -40,11 +40,12 @@
     <li><a href="#omarchy-gdrive"><span class="n">01</span><span class="name">omarchy-gdrive</span><span class="tag">google drive as a normal folder on omarchy.</span></a></li>
     <li><a href="#todoterm"><span class="n">02</span><span class="name">todoterm</span><span class="tag">a minimalist task manager for the terminal.</span></a></li>
     <li><a href="#jot"><span class="n">03</span><span class="name">jot</span><span class="tag">quick notes for the terminal.</span></a></li>
+    <li><a href="#ember"><span class="n">04</span><span class="name">ember</span><span class="tag">a black-and-white omarchy theme with one orange accent.</span></a></li>
   </ol>
 </nav>
 
 <section class="group" id="omarchy" aria-labelledby="omarchy-h">
-  <header><h2 id="omarchy-h">omarchy</h2><p>plugins and apps that hook into omarchy.</p></header>
+  <header><h2 id="omarchy-h">omarchy</h2><p>plugins, apps and a theme for omarchy.</p></header>
 
   <article class="project" id="omarchy-gdrive">
     <h3><span class="n">01</span>omarchy-gdrive</h3>
@@ -129,6 +130,25 @@ contrib/omarchy/install.sh</pre>
 cd jot
 contrib/omarchy/install.sh</pre>
     <p class="meta"><span>rust · gpl-3.0 · 0.1.0</span><span><a href="https://github.com/gloomyweather/jot">source</a></span></p>
+  </article>
+
+  <article class="project" id="ember">
+    <h3><span class="n">04</span>ember<span class="mark" aria-hidden="true">◐</span></h3>
+    <p class="tagline">a black-and-white omarchy theme with one orange accent.</p>
+    <figure class="win">
+      <figcaption><span>ember · ember-light</span><span>4 of 24 wallpapers</span></figcaption>
+      <img class="shot" src="ember.webp" width="1424" height="802" loading="lazy" decoding="async" alt="four ember wallpapers: a plutarch quote over an orange glow and a striped half-sun on black, a giant orange ampersand and thin orange rings on white">
+    </figure>
+    <ul>
+      <li>pure black, pure white and <code>#d97757</code>. window borders, the bar and the keywords in your editor all burn the same quiet orange.</li>
+      <li>a dark and a light version. switch between them like any omarchy theme.</li>
+      <li>twelve wallpapers each: a soft glow, thin rings, a striped sun, a lora ampersand, a few quiet quotes. drawn by a script, not downloaded.</li>
+      <li>an orange boot and unlock logo to match.</li>
+    </ul>
+    <pre class="cmd">omarchy theme install https://github.com/gloomyweather/omarchy-ember-theme
+omarchy theme install https://github.com/gloomyweather/omarchy-ember-light-theme
+omarchy theme set ember</pre>
+    <p class="meta"><span>theme · mit</span><span><a href="https://github.com/gloomyweather/omarchy-ember-theme">dark</a><a href="https://github.com/gloomyweather/omarchy-ember-light-theme">light</a></span></p>
   </article>
 </section>
 </main>
