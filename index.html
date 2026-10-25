@@ -13,22 +13,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 <div class="page">
 <header class="top">
   <a href="./">gloomyweather</a>
-  <nav aria-label="sections"><a href="#omarchy">omarchy</a><a href="#terminal">terminal</a><a href="https://github.com/gloomyweather">github</a></nav>
+  <nav aria-label="sections"><a href="#omarchy">omarchy</a><a href="https://github.com/gloomyweather">github</a></nav>
 </header>
 
 <main>
 <section class="hero">
   <h1>gloomyweather<span class="cur" aria-hidden="true"></span></h1>
   <p class="lead">small, quiet tools for the terminal and omarchy.</p>
-  <p class="more">each one does one thing and stays out of the way. all of them run on linux.
-  the newest ones plug into <a href="https://omarchy.org">omarchy</a>: a hotkey, the launcher,
-  the bar, the current theme.</p>
+  <p class="more">each one does one thing and stays out of the way. all of them run on linux
+  and plug into <a href="https://omarchy.org">omarchy</a>: a hotkey, the launcher, the bar,
+  the current theme.</p>
 </section>
 
 <nav class="index" aria-label="projects">
@@ -36,12 +36,11 @@
     <li><a href="#omarchy-gdrive"><span class="n">01</span><span class="name">omarchy-gdrive</span><span class="tag">google drive as a normal folder on omarchy.</span></a></li>
     <li><a href="#todoterm"><span class="n">02</span><span class="name">todoterm</span><span class="tag">a minimalist task manager for the terminal.</span></a></li>
     <li><a href="#jot"><span class="n">03</span><span class="name">jot</span><span class="tag">quick notes for the terminal.</span></a></li>
-    <li><a href="#mdterm"><span class="n">04</span><span class="name">mdterm</span><span class="tag">a vim-like markdown editor and viewer.</span></a></li>
   </ol>
 </nav>
 
 <section class="group" id="omarchy" aria-labelledby="omarchy-h">
-  <header><h2 id="omarchy-h">omarchy</h2><p>plugins and apps that hook into omarchy. newest work.</p></header>
+  <header><h2 id="omarchy-h">omarchy</h2><p>plugins and apps that hook into omarchy.</p></header>
 
   <article class="project" id="omarchy-gdrive">
     <h3><span class="n">01</span>omarchy-gdrive</h3>
@@ -126,24 +125,6 @@ contrib/omarchy/install.sh</pre>
 cd jot
 contrib/omarchy/install.sh</pre>
     <p class="meta"><span>rust · gpl-3.0 · 0.1.0</span><span><a href="https://github.com/gloomyweather/jot">source</a></span></p>
-  </article>
-</section>
-
-<section class="group" id="terminal" aria-labelledby="terminal-h">
-  <header><h2 id="terminal-h">terminal</h2><p>older work. plain rust, any terminal.</p></header>
-
-  <article class="project" id="mdterm">
-    <h3><span class="n">04</span>mdterm</h3>
-    <p class="tagline">a vim-like markdown editor and viewer for the terminal.</p>
-    <ul>
-      <li>raw markdown on the left, a live preview on the right.</li>
-      <li>normal, insert and visual modes, <code>:</code> commands, several files open at once.</li>
-      <li>syntax highlighting for code blocks in the preview. large files stay fast.</li>
-    </ul>
-    <pre class="cmd">git clone https://github.com/gloomyweather/mdterm
-cd mdterm
-cargo install --path .</pre>
-    <p class="meta"><span>rust · gpl-3.0</span><span><a href="https://github.com/gloomyweather/mdterm">source</a></span></p>
   </article>
 </section>
 </main>
