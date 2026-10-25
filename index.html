@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gloomyweather</title>
+<meta name="description" content="small, quiet tools for the terminal and omarchy.">
+<meta property="og:title" content="gloomyweather">
+<meta property="og:description" content="small, quiet tools for the terminal and omarchy.">
+<meta property="og:url" content="https://gloomyweather.github.io/">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div class="page">
+<header class="top">
+  <a href="./">gloomyweather</a>
+  <nav aria-label="sections"><a href="#omarchy">omarchy</a><a href="#terminal">terminal</a><a href="https://github.com/gloomyweather">github</a></nav>
+</header>
+
+<main>
+<section class="hero">
+  <h1>gloomyweather<span class="cur" aria-hidden="true"></span></h1>
+  <p class="lead">small, quiet tools for the terminal and omarchy.</p>
+  <p class="more">each one does one thing and stays out of the way. all of them run on linux.
+  the newest ones plug into <a href="https://omarchy.org">omarchy</a>: a hotkey, the launcher,
+  the bar, the current theme.</p>
+</section>
+
+<nav class="index" aria-label="projects">
+  <ol>
+    <li><a href="#omarchy-gdrive"><span class="n">01</span><span class="name">omarchy-gdrive</span><span class="tag">google drive as a normal folder on omarchy.</span></a></li>
+    <li><a href="#todoterm"><span class="n">02</span><span class="name">todoterm</span><span class="tag">a minimalist task manager for the terminal.</span></a></li>
+    <li><a href="#jot"><span class="n">03</span><span class="name">jot</span><span class="tag">quick notes for the terminal.</span></a></li>
+    <li><a href="#mdterm"><span class="n">04</span><span class="name">mdterm</span><span class="tag">a vim-like markdown editor and viewer.</span></a></li>
+  </ol>
+</nav>
+
+<section class="group" id="omarchy" aria-labelledby="omarchy-h">
+  <header><h2 id="omarchy-h">omarchy</h2><p>plugins and apps that hook into omarchy. newest work.</p></header>
+
+  <article class="project" id="omarchy-gdrive">
+    <h3><span class="n">01</span>omarchy-gdrive</h3>
+    <p class="tagline">google drive as a normal folder on omarchy.</p>
+    <ul>
+      <li>open, edit and save drive files from files, the terminal or any app. built on <a href="https://rclone.org/">rclone</a>.</li>
+      <li>bookmarks in files, right-click to open in google drive or make available offline, a drive icon in the bar, an entry in the omarchy menu.</li>
+      <li><code>super + ctrl + g</code> opens drive.</li>
+      <li>runs only on your computer and talks only to google. needs omarchy 4 and your own google key (about ten minutes, once).</li>
+    </ul>
+    <pre class="cmd">git clone https://github.com/gloomyweather/omarchy-gdrive-app.git \
+  ~/.local/src/omarchy-gdrive
+~/.local/src/omarchy-gdrive/install.sh</pre>
+    <p class="meta"><span>shell · mit</span><span><a href="https://gloomyweather.github.io/omarchy-gdrive-app/">site</a><a href="https://github.com/gloomyweather/omarchy-gdrive-app">source</a></span></p>
+  </article>
+
+  <article class="project" id="todoterm">
+    <h3><span class="n">02</span>todoterm<span class="mark" aria-hidden="true">૮ ˶ᵔ ᵕ ᵔ˶ ა</span></h3>
+    <p class="tagline">a minimalist task manager for the terminal.</p>
+    <figure class="win">
+      <figcaption><span>todoterm</span><span>super + alt + t</span></figcaption>
+      <pre class="tui" role="img" aria-label="todoterm: a list of eight tasks with priorities and due dates, one selected"> <span class="b"> ~ todo list ~</span>  (=^<span class="g">･</span>ω<span class="g">･</span>^=)                                                     2/8
+ <span class="m">──────────────────────────────────────────────────────────────────────────────────</span>
+    <span class="m">[ ] </span><span class="b">!!!</span> finish the jot readme                                             today
+    <span class="m">[ ] </span><span class="b">!!</span> reply to the landlord about the heater                          <span class="m">tomorrow</span>
+    <span class="m">[ ] </span><span class="b">!</span> renew library books                                                   <span class="m">wed</span>
+ <span class="r"> › </span><span class="r m">[ ] </span><span class="r">book a dentist appointment                                              </span><span class="r m">fri</span>
+    <span class="m">[ ] </span>try the new omarchy theme
+    <span class="m">[ ] </span>read chapter 16 of the rust book                                     <span class="m">nov 03</span>
+    <span class="m">[x] !!</span> <span class="s m">back up dotfiles</span>
+    <span class="m">[x] </span><span class="s m">buy coffee beans</span>
+
+ <span class="m">──────────────────────────────────────────────────────────────────────────────────</span>
+ <span class="b"> a</span><span class="m"> add </span><span class="b"> spc</span><span class="m"> done </span><span class="b"> e</span><span class="m"> edit </span><span class="b"> d</span><span class="m"> delete </span><span class="b"> u</span><span class="m"> undo </span><span class="b"> /</span><span class="m"> filter </span><span class="b"> J/K</span><span class="m"> move </span><span class="b"> p</span><span class="m"> priority </span><span class="b"> ?</span><span class="m"> help</span></pre>
+    </figure>
+    <ul>
+      <li>one window, one list. vim-like keys, priorities and due dates right in the text: <code>buy milk !! @fri</code>.</li>
+      <li><code>super + alt + t</code> opens it in a floating window, or focuses it if it's already open.</li>
+      <li>follows the current omarchy theme and repaints live when you switch themes.</li>
+      <li>saves after every change, atomically. a broken <code>todo.json</code> is never overwritten.</li>
+    </ul>
+    <pre class="cmd">git clone https://github.com/gloomyweather/todoterm
+cd todoterm
+contrib/omarchy/install.sh</pre>
+    <p class="meta"><span>rust · gpl-3.0 · 0.2.0</span><span><a href="https://github.com/gloomyweather/todoterm">source</a></span></p>
+  </article>
+
+  <article class="project" id="jot">
+    <h3><span class="n">03</span>jot<span class="mark" aria-hidden="true">◆</span></h3>
+    <p class="tagline">quick notes for the terminal.</p>
+    <figure class="win">
+      <figcaption><span>jot</span><span>super + alt + n</span></figcaption>
+      <pre class="tui" role="img" aria-label="jot: a list of five notes on the left, the selected note rendered on the right">  ◆ <span class="b">jot</span><span class="m">  ·  5 notes</span>                                                        <span class="m">~/Notes</span>
+  <span class="m">────────────────────────────────────────────────────────────────────────────────</span>
+
+  <span class="m">/ search</span>                       <span class="m">│</span>   <span class="m">edited 3d ago · 52 words · </span>pinned
+                                 <span class="m">│</span>
+  ▌ * <span class="b">omarchy setup</span>          <span class="m">3d</span>  <span class="m">│</span>   <span class="b">omarchy setup</span>
+  ▌ <span class="m">after a fresh install</span>        <span class="m">│</span>   after a fresh install
+                                 <span class="m">│</span>
+    ideas                   <span class="m">14m</span>  <span class="m">│</span>   <span class="b">packages</span>
+    <span class="m">things to build someday</span>      <span class="m">│</span>   <span class="m">■ </span><span class="s m">neovim, tmux, ripgrep</span>
+                                 <span class="m">│</span>   <span class="m">■ </span><span class="s m">rust via rustup</span>
+    groceries                <span class="m">2h</span>  <span class="m">│</span>   □ syncthing for ~/Notes
+    <span class="m">oat milk</span>                     <span class="m">│</span>
+                                 <span class="m">│</span>   <span class="b">keys</span>
+    reading list             <span class="m">1d</span>  <span class="m">│</span>   • super + alt + t → todoterm
+    <span class="m">to finish this winter</span>        <span class="m">│</span>   • super + alt + n → jot
+                                 <span class="m">│</span>
+    rust notes               <span class="m">5d</span>  <span class="m">│</span>   ▎ <span class="i m">dotfiles live in git, not in the cloud.</span>
+    <span class="m">small things i forget</span>        <span class="m">│</span>
+
+  n<span class="m"> new   </span>⏎<span class="m"> edit   </span>/<span class="m"> search   </span>p<span class="m"> pin   </span>d<span class="m"> delete   </span>y<span class="m"> copy   </span>e<span class="m"> nvim   </span>q<span class="m"> quit   </span>?<span class="m"> help</span></pre>
+    </figure>
+    <ul>
+      <li>a list on the left, the rendered note on the right, an editor one key away.</li>
+      <li>notes are plain markdown files in <code>~/Notes</code>, one file per note. edit them with anything, sync them with anything.</li>
+      <li><code>super + alt + n</code> opens notes. <code>super + ctrl + alt + n</code> opens a quick note; <code>esc</code> saves and closes it.</li>
+      <li>floats and follows the current omarchy theme live. <code>jot add "buy milk"</code> saves a note without opening anything.</li>
+    </ul>
+    <pre class="cmd">git clone https://github.com/gloomyweather/jot
+cd jot
+contrib/omarchy/install.sh</pre>
+    <p class="meta"><span>rust · gpl-3.0 · 0.1.0</span><span><a href="https://github.com/gloomyweather/jot">source</a></span></p>
+  </article>
+</section>
+
+<section class="group" id="terminal" aria-labelledby="terminal-h">
+  <header><h2 id="terminal-h">terminal</h2><p>older work. plain rust, any terminal.</p></header>
+
+  <article class="project" id="mdterm">
+    <h3><span class="n">04</span>mdterm</h3>
+    <p class="tagline">a vim-like markdown editor and viewer for the terminal.</p>
+    <ul>
+      <li>raw markdown on the left, a live preview on the right.</li>
+      <li>normal, insert and visual modes, <code>:</code> commands, several files open at once.</li>
+      <li>syntax highlighting for code blocks in the preview. large files stay fast.</li>
+    </ul>
+    <pre class="cmd">git clone https://github.com/gloomyweather/mdterm
+cd mdterm
+cargo install --path .</pre>
+    <p class="meta"><span>rust · gpl-3.0</span><span><a href="https://github.com/gloomyweather/mdterm">source</a></span></p>
+  </article>
+</section>
+</main>
+
+<footer class="bottom">
+  <span>plain html. no scripts.</span>
+  <a href="https://github.com/gloomyweather">github.com/gloomyweather</a>
+</footer>
+</div>
+</body>
+</html>
