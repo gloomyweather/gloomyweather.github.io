@@ -309,43 +309,108 @@
   /* command palette: ctrl+k or / */
   const pal = el("dialog", "pal");
   pal.setAttribute("aria-label", "command palette");
-  pal.innerHTML = '<div class="pin"><span aria-hidden="true">›</span><input type="text" spellcheck="false" autocomplete="off" placeholder="type a command or a project" aria-label="search"></div><ul role="listbox"></ul><p class="phint">↑↓ move · ⏎ run · esc close</p>';
+  pal.innerHTML = '<div class="pin"><span aria-hidden="true">›</span><input type="text" spellcheck="false" autocomplete="off" placeholder="type a command or a project" aria-label="search"><span class="cnt"></span></div><ul role="listbox"><div class="hl"></div></ul><div class="pprev"></div><p class="phint"><span>↑↓ move · ⏎ run · esc close</span><span class="tip"></span></p>';
   d.body.append(pal);
-  const pin = $("input", pal), plist = $("ul", pal);
+  const pin = $("input", pal), plist = $("ul", pal), hl = $(".hl", pal), prev = $(".pprev", pal), pcnt = $(".cnt", pal), ptip = $(".tip", pal);
   let items = [], psel = 0;
   const jump = y => scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+  const recent = () => { try { return JSON.parse(localStorage.getItem("recent") || "[]"); } catch (e) { return []; } };
+  const remember = id => { try { localStorage.setItem("recent", JSON.stringify([id, ...recent().filter(x => x !== id)].slice(0, 3))); } catch (e) {} };
+  const copyText = t => navigator.clipboard.writeText(t).then(() => toast("install command copied"), () => toast("press ctrl + c on the command"));
   const commands = () => {
     const c = [];
     projects.forEach((p, i) => {
-      const name = $(".pn", p).textContent, cmd = $("pre.cmd", p), src = $(".meta a:last-child", p);
-      c.push({ label: "go to " + name, hint: String(i + 1), run: () => go(p) });
-      if (cmd) c.push({ label: "copy install command: " + name, hint: "copy", run: () => navigator.clipboard.writeText(cmd.textContent.trim()).then(() => toast("install command copied"), () => toast("press ctrl + c on the command")) });
-      if (src) c.push({ label: "open source: " + name, hint: "github", run: () => open(src.href, "_blank", "noopener") });
+      const name = $(".pn", p).textContent, tag = $(".tagline", p).textContent, cmd = $("pre.cmd", p), src = $(".meta a:last-child", p), shot = $(".zoombtn", p);
+      const code = cmd ? cmd.textContent.trim() : "";
+      c.push({ id: "go:" + name, group: "projects", label: "go to " + name, hint: String(i + 1), kw: tag, desc: tag, code, run: () => go(p) });
+      if (cmd) c.push({ id: "copy:" + name, search: true, label: "copy install command: " + name, hint: "copy", desc: "copies the install commands to your clipboard", code, run: () => copyText(code) });
+      if (src) c.push({ id: "src:" + name, search: true, label: "open source: " + name, hint: "github", desc: src.href.replace("https://", ""), run: () => open(src.href, "_blank", "noopener") });
+      if (shot) c.push({ id: "shot:" + name, search: true, label: "view screenshot: " + name, hint: "view", desc: "opens it full size", run: () => shot.click() });
     });
-    c.push({ label: "switch to " + (isDark() ? "light" : "dark") + " theme", hint: "t", run: () => toggleTheme() });
-    c.push({ label: (raining ? "stop" : "start") + " the rain", hint: "r", run: toggleRain });
-    c.push({ label: "scroll to top", hint: "g", run: () => jump(0) });
-    c.push({ label: "scroll to bottom", hint: "G", run: () => jump(root.scrollHeight) });
-    c.push({ label: "open github profile", hint: "github", run: () => open("https://github.com/gloomyweather", "_blank", "noopener") });
-    if (help) c.push({ label: "show keys", hint: "?", run: () => help.showModal() });
+    c.push({ id: "theme", group: "actions", label: "switch to " + (isDark() ? "light" : "dark") + " theme", hint: "t", desc: "the page keeps your choice", run: () => toggleTheme() });
+    c.push({ id: "rain", group: "actions", label: (raining ? "stop" : "start") + " the rain", hint: "r", desc: "ascii rain, off until you reload", run: toggleRain });
+    c.push({ id: "random", group: "actions", label: "surprise me", hint: "random", kw: "random lucky", desc: "jumps to a random project", run: () => go(projects[(Math.random() * projects.length) | 0]) });
+    c.push({ id: "weather", group: "actions", label: "check the weather", hint: "wx", kw: "wx forecast", desc: "outside, probably", run: () => toast(`overcast, ${6 + new Date().getHours() % 5}°c${raining ? ", light rain" : ""}`) });
+    c.push({ id: "top", group: "actions", label: "scroll to top", hint: "g", run: () => jump(0), desc: "back to the beginning" });
+    c.push({ id: "bottom", group: "actions", label: "scroll to bottom", hint: "G", run: () => jump(root.scrollHeight), desc: "to the footer" });
+    if (help) c.push({ id: "keys", group: "actions", label: "show keys", hint: "?", desc: "every shortcut on one page", run: () => help.showModal() });
+    c.push({ id: "gh", group: "links", label: "open github profile", hint: "github", desc: "github.com/gloomyweather", run: () => open("https://github.com/gloomyweather", "_blank", "noopener") });
     return c;
   };
-  function render() {
-    const terms = pin.value.toLowerCase().split(/\s+/).filter(Boolean);
-    const all = commands().filter(c => terms.every(t => (c.label + " " + c.hint).toLowerCase().includes(t)));
-    all.sort((a, b) => (b.label.toLowerCase().startsWith(terms[0] || "\0") ? 1 : 0) - (a.label.toLowerCase().startsWith(terms[0] || "\0") ? 1 : 0));
-    items = all; psel = Math.min(psel, Math.max(0, items.length - 1));
-    plist.replaceChildren(...items.map((c, i) => { const li = el("li"); li.setAttribute("role", "option"); li.append(el("span", "", c.label), el("span", "k", c.hint)); if (i === psel) li.className = "sel"; li.addEventListener("pointermove", () => { if (psel !== i) { psel = i; mark(); } }); li.addEventListener("click", () => run(i)); return li; }));
-    if (!items.length) plist.append(el("li", "none", "nothing here. try: theme, rain, jot"));
+  const fuzzy = (q, s) => {
+    let qi = 0, score = 0, last = -2;
+    const hits = [];
+    for (let i = 0; i < s.length && qi < q.length; i++) {
+      if (s[i] === q[qi]) { hits.push(i); score += 1 + (i === last + 1 ? 3 : 0) + (i === 0 || " -:/".includes(s[i - 1]) ? 4 : 0); last = i; qi++; }
+    }
+    return qi === q.length ? { score: score - s.length * 0.02, hits } : null;
+  };
+  function render(fresh) {
+    const q = pin.value.toLowerCase().replace(/\s+/g, "");
+    const all = commands();
+    let rows = [];
+    if (!q) {
+      const rec = recent().map(id => all.find(c => c.id === id)).filter(Boolean);
+      const ids = new Set(rec.map(c => c.id));
+      if (rec.length) rows.push({ head: "recent" }, ...rec.map(c => ({ c })));
+      ["projects", "actions", "links"].forEach(g => rows.push({ head: g }, ...all.filter(c => c.group === g && !ids.has(c.id)).map(c => ({ c }))));
+    } else {
+      rows = all.map(c => { const l = fuzzy(q, c.label.toLowerCase()); if (l) return { c, hits: l.hits, s: l.score + 10 }; const k = fuzzy(q, ((c.kw || "") + " " + c.hint).toLowerCase()); return k ? { c, s: k.score } : null; })
+        .filter(Boolean).sort((x, y) => y.s - x.s);
+    }
+    items = rows.filter(r => r.c).map(r => r.c);
+    psel = Math.min(psel, Math.max(0, items.length - 1));
+    let n = 0;
+    plist.replaceChildren(hl, ...rows.map(r => {
+      const li = el("li");
+      if (r.head) { li.className = "hdr"; li.textContent = r.head; return li; }
+      const i = n++;
+      li.className = "it"; li.setAttribute("role", "option");
+      const lab = el("span", "lab");
+      const hs = new Set(r.hits || []);
+      Array.from(r.c.label).forEach((ch, k) => { if (hs.has(k)) lab.append(el("mark", "", ch)); else lab.append(ch); });
+      li.append(lab, el("span", "k", r.c.hint));
+      if (!reduce && fresh) { li.style.animation = "fade .3s ease both"; li.style.animationDelay = Math.min(i, 12) * 18 + "ms"; }
+      li.addEventListener("pointermove", () => { if (psel !== i) { psel = i; mark(); } });
+      li.addEventListener("click", () => run(i));
+      return li;
+    }));
+    if (!items.length) { const li = el("li", "none", "nothing here. try: theme, rain, jot"); plist.append(li); }
+    pcnt.textContent = q ? items.length + (items.length === 1 ? " match" : " matches") : "";
+    hl.style.transition = "none";
+    mark();
+    requestAnimationFrame(() => { hl.style.transition = ""; });
   }
-  const mark = () => { $$("li", plist).forEach((li, i) => li.classList.toggle("sel", i === psel)); const s = $("li.sel", plist); if (s) s.scrollIntoView({ block: "nearest" }); };
-  const run = i => { const c = items[i]; if (!c) return; pal.close(); setTimeout(c.run, 60); };
-  const openPalette = () => { pin.value = ""; psel = 0; render(); pal.showModal(); pin.focus(); };
-  pin.addEventListener("input", () => { psel = 0; render(); });
+  function mark() {
+    const its = $$("li.it", plist);
+    its.forEach((li, i) => li.classList.toggle("sel", i === psel));
+    const s = its[psel];
+    hl.style.opacity = s ? 1 : 0;
+    if (s) { hl.style.height = s.offsetHeight + "px"; hl.style.transform = `translateY(${s.offsetTop}px)`; s.scrollIntoView({ block: "nearest" }); }
+    const c = items[psel];
+    prev.replaceChildren();
+    if (c) {
+      prev.append(el("div", "pd", c.desc || ""));
+      if (c.code) prev.append(el("pre", "pc", c.code));
+    }
+    ptip.textContent = c && c.code && c.id.startsWith("go:") ? "tab: copy install" : "";
+  }
+  const run = i => { const c = items[i]; if (!c) return; remember(c.id); pal.close(); setTimeout(c.run, 60); };
+  const openPalette = () => { pin.value = ""; psel = 0; render(true); pal.showModal(); pin.focus(); hl.style.transition = "none"; mark(); requestAnimationFrame(() => { hl.style.transition = ""; }); };
+  if (nav) {
+    const sb = el("button", "theme", "search");
+    sb.type = "button";
+    sb.setAttribute("aria-label", "open search and commands");
+    sb.addEventListener("click", openPalette);
+    nav.insertBefore(sb, rainBtn || themeBtn);
+  }
+  pin.addEventListener("input", () => { psel = 0; render(false); });
   pin.addEventListener("keydown", e => {
-    if (e.key === "ArrowDown" || (e.key === "n" && e.ctrlKey)) { psel = (psel + 1) % Math.max(1, items.length); mark(); }
-    else if (e.key === "ArrowUp" || (e.key === "p" && e.ctrlKey)) { psel = (psel - 1 + items.length) % Math.max(1, items.length); mark(); }
+    const len = Math.max(1, items.length);
+    if (e.key === "ArrowDown" || (e.key === "n" && e.ctrlKey)) { psel = (psel + 1) % len; mark(); }
+    else if (e.key === "ArrowUp" || (e.key === "p" && e.ctrlKey)) { psel = (psel - 1 + len) % len; mark(); }
     else if (e.key === "Enter") run(psel);
+    else if (e.key === "Tab") { const c = items[psel]; if (c && c.code && c.id.startsWith("go:")) { copyText(c.code); remember("copy:" + c.id.slice(3)); pal.close(); } }
     else return;
     e.preventDefault();
   });
