@@ -227,13 +227,14 @@ code { transition: background-color .15s, color .15s; }
 .progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 100; background: var(--ink); transform: scaleX(0); transform-origin: left; pointer-events: none; }
 .sl {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: flex; gap: 2ch; height: 22px;
-  background: var(--ink); color: var(--paper); font-size: 12px; line-height: 22px; white-space: nowrap; overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 7%, var(--paper)); color: var(--faint); border-top: 1px solid color-mix(in srgb, var(--ink) 22%, var(--paper)); font-size: 12px; line-height: 21px; white-space: nowrap; overflow: hidden;
   transform: translateY(100%); transition: transform .4s var(--out); pointer-events: none;
 }
 .sl.show { transform: none; }
-.sl .mode { padding: 0 1.5ch; background: var(--paper); color: var(--ink); font-weight: 700; }
+.sl .mode { padding: 0 1.5ch; background: color-mix(in srgb, var(--ink) 16%, var(--paper)); color: var(--ink); font-weight: 700; }
+.sl .where { color: var(--ink); }
 .sl .grow { flex: 1; }
-.sl .hint { opacity: .6; }
+.sl .hint { opacity: .8; }
 .sl .pct { padding-right: 2ch; min-width: 6ch; text-align: right; }
 
 /* ascii rain */
@@ -266,7 +267,7 @@ p, li { text-wrap: pretty; }
 .group { scroll-margin-top: 24px; }
 
 /* toasts, palette */
-.toast { position: fixed; right: 16px; bottom: 36px; z-index: 96; max-width: calc(100vw - 32px); padding: 4px 12px; background: var(--ink); color: var(--paper); font-size: 12px; line-height: 1.6; pointer-events: none; opacity: 0; transform: translateY(8px); }
+.toast { position: fixed; right: 16px; bottom: 36px; z-index: 96; max-width: calc(100vw - 32px); padding: 3px 12px; background: color-mix(in srgb, var(--ink) 7%, var(--paper)); color: var(--ink); border: 1px solid color-mix(in srgb, var(--ink) 30%, var(--paper)); font-size: 12px; line-height: 1.6; pointer-events: none; opacity: 0; transform: translateY(8px); }
 .toast.show { animation: toast 2.2s var(--out) both; }
 @keyframes toast { 0% { opacity: 0; transform: translateY(8px); } 10%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(4px); } }
 .pal { width: min(600px, calc(100vw - 32px)); margin: 12vh auto 0; overflow: hidden; }
