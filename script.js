@@ -19,6 +19,14 @@
   const projects = $$(".project");
   const home = !!projects.length;
 
+  /* skip link for keyboard users */
+  if ($("main")) {
+    const sk = el("a", "skip", "skip to content");
+    sk.href = "#main";
+    $("main").id = "main";
+    d.body.prepend(sk);
+  }
+
   /* theme: a circle grows from the button */
   const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   let turns = 0, themeBtn = null;
@@ -222,21 +230,7 @@
   addEventListener("resize", queue);
   update();
 
-  /* jumping to a project blinks its title once the scroll settles */
-  const settle = fn => {
-    let last = -1, n = 0;
-    const t = () => { if (scrollY === last) { if (++n > 6) return fn(); } else { n = 0; last = scrollY; } requestAnimationFrame(t); };
-    requestAnimationFrame(t);
-  };
-  const flash = pr => {
-    const h = $("h3", pr);
-    if (!h || reduce) return;
-    h.classList.remove("hit"); void h.offsetWidth; h.classList.add("hit");
-  };
-  const hashTarget = () => { const t = location.hash && d.getElementById(decodeURIComponent(location.hash.slice(1))); return t && t.classList.contains("project") ? t : null; };
-  addEventListener("hashchange", () => { const t = hashTarget(); if (t) settle(() => flash(t)); });
-  if (hashTarget()) addEventListener("load", () => settle(() => flash(hashTarget())), { once: true });
-  const go = pr => { pr.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); settle(() => flash(pr)); };
+  const go = pr => pr.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
 
   /* ascii rain: always on at load (calmer for reduced motion), drops splash */
   const cv = el("canvas", "rain");
@@ -293,8 +287,6 @@
     rainBtn.addEventListener("click", toggleRain);
     nav.insertBefore(rainBtn, themeBtn);
   }
-  const cur = $(".hero .cur") || $(".lost .cur");
-  if (cur) { cur.classList.add("live"); cur.title = "rain?"; cur.addEventListener("click", toggleRain); }
   setRain(true, false);
 
   /* footer: the weather where you are (it is overcast) */
@@ -409,6 +401,7 @@
     const len = Math.max(1, items.length);
     if (e.key === "ArrowDown" || (e.key === "n" && e.ctrlKey)) { psel = (psel + 1) % len; mark(); }
     else if (e.key === "ArrowUp" || (e.key === "p" && e.ctrlKey)) { psel = (psel - 1 + len) % len; mark(); }
+    else if (e.key === "Escape" && pin.value) { pin.value = ""; psel = 0; render(false); }
     else if (e.key === "Enter") run(psel);
     else if (e.key === "Tab") { const c = items[psel]; if (c && c.code && c.id.startsWith("go:")) { copyText(c.code); remember("copy:" + c.id.slice(3)); pal.close(); } }
     else return;

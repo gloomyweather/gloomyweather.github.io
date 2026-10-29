@@ -72,7 +72,6 @@ code { transition: background-color .15s, color .15s; }
 .hero p { max-width: 60ch; }
 .hero .lead { animation: up .9s var(--out) 2.05s both; }
 .hero .more { color: var(--faint); animation: up .9s var(--out) 2.2s both; }
-.hero .cur.live { cursor: pointer; }
 .hero { position: relative; }
 .hero > :not(.sky) { position: relative; z-index: 1; }
 .prompt { margin: 0 0 18px; font-size: 13px; color: var(--faint); }
@@ -149,11 +148,6 @@ code { transition: background-color .15s, color .15s; }
 .meta a { color: var(--ink); margin-left: 2ch; }
 .meta a:first-child { margin-left: 0; }
 
-/* a project title blinks like a found cursor when you jump to it */
-.project h3.hit { animation: hit .9s steps(1, end) 1; }
-.project h3.hit .n, .project h3.hit .mark { animation: hit-faint .9s steps(1, end) 1; }
-@keyframes hit { 0%, 50% { background: var(--ink); color: var(--paper); } 25%, 75%, 100% { background: transparent; color: var(--ink); } }
-@keyframes hit-faint { 0%, 50% { color: var(--paper); } 25%, 75%, 100% { color: var(--faint); } }
 
 /* windows: terminal captures print line by line, screenshots wipe in */
 .win { margin: 0 0 8px; border: 1px solid var(--ink); container-type: inline-size; overflow: hidden; }
@@ -238,7 +232,16 @@ kbd { font: inherit; font-size: 12px; border: 1px solid var(--ink); padding: 0 .
 .lb { width: min(96vw, 1424px); max-height: 94vh; overflow: auto; cursor: zoom-out; }
 .lb img { display: block; width: 100%; height: auto; }
 
-/* toasts, ripples, palette */
+/* details */
+.skip { position: absolute; left: 16px; top: -48px; z-index: 120; padding: 4px 12px; background: var(--ink); color: var(--paper); text-decoration: none; transition: top .2s var(--out); }
+.skip:focus-visible { top: 12px; outline: none; }
+html { -webkit-tap-highlight-color: transparent; caret-color: var(--ink); }
+html:has(dialog[open]) { overflow: hidden; }
+h1, h2, h3 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+.group { scroll-margin-top: 24px; }
+
+/* toasts, palette */
 .toast { position: fixed; right: 16px; bottom: 36px; z-index: 96; max-width: calc(100vw - 32px); padding: 4px 12px; background: var(--ink); color: var(--paper); font-size: 12px; line-height: 1.6; pointer-events: none; opacity: 0; transform: translateY(8px); }
 .toast.show { animation: toast 2.2s var(--out) both; }
 @keyframes toast { 0% { opacity: 0; transform: translateY(8px); } 10%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(4px); } }
@@ -294,4 +297,10 @@ kbd { font: inherit; font-size: 12px; border: 1px solid var(--ink); padding: 0 .
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; transition-delay: 0s !important; }
   .cur { animation: none; }
+}
+
+@media print {
+  .progress, .sl, .rain, .sky, .ticker, .copy, .theme, .toast, .skip, .top nav button { display: none !important; }
+  .rv, .rvw .tui, .rvw .shot { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+  html, body { background: #fff; color: #000; }
 }
