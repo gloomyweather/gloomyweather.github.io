@@ -94,9 +94,7 @@ code { transition: background-color .15s, color .15s; }
 .ticker:hover > div { animation-play-state: paused; }
 @keyframes ticker { to { transform: translateX(-50%); } }
 
-/* block cursor: trails the mouse and wraps links */
-.blk { position: fixed; z-index: 95; top: 0; left: 0; width: 10px; height: 10px; background: #fff; mix-blend-mode: difference; pointer-events: none; opacity: 0; transition: opacity .25s; will-change: transform, width, height; }
-.blk.on { opacity: 1; }
+
 
 /* index: a row fills from the left, the arrow drops in */
 .index ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
@@ -244,9 +242,6 @@ kbd { font: inherit; font-size: 12px; border: 1px solid var(--ink); padding: 0 .
 .toast { position: fixed; right: 16px; bottom: 36px; z-index: 96; max-width: calc(100vw - 32px); padding: 4px 12px; background: var(--ink); color: var(--paper); font-size: 12px; line-height: 1.6; pointer-events: none; opacity: 0; transform: translateY(8px); }
 .toast.show { animation: toast 2.2s var(--out) both; }
 @keyframes toast { 0% { opacity: 0; transform: translateY(8px); } 10%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(4px); } }
-.rip { position: fixed; z-index: 94; width: 8px; height: 8px; margin: -4px 0 0 -4px; border: 1px solid var(--ink); border-radius: 50%; pointer-events: none; animation: rip .8s var(--out) both; }
-@keyframes rip { from { opacity: .7; transform: scale(.3); } to { opacity: 0; transform: scale(7); } }
-.zoombtn { transform-origin: center; }
 .pal { width: min(560px, calc(100vw - 32px)); margin: 14vh auto 0; }
 .pal .pin { display: flex; gap: 1ch; align-items: center; padding: 0 18px; border-bottom: 1px solid var(--ink); }
 .pal input { flex: 1; min-width: 0; font: inherit; color: inherit; background: none; border: 0; outline: 0; padding: 14px 0; }
