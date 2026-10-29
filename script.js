@@ -1,0 +1,270 @@
+(() => {
+  "use strict";
+  const d = document, root = d.documentElement;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (s, c = d) => c.querySelector(s);
+  const $$ = (s, c = d) => Array.from(c.querySelectorAll(s));
+  const el = (tag, cls, text) => { const e = d.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+  const store = (k, v) => { try { v === undefined ? localStorage.getItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+
+  const projects = $$(".project");
+  const home = !!projects.length;
+
+  /* theme: a circle grows from the button */
+  const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  let turns = 0, themeBtn = null;
+  const setTheme = t => { root.dataset.theme = t; store("theme", t); };
+  function toggleTheme(at) {
+    const next = isDark() ? "light" : "dark";
+    if (themeBtn) themeBtn.firstElementChild.style.transform = `rotate(${++turns * 180}deg)`;
+    if (!d.startViewTransition || reduce) return setTheme(next);
+    const x = at ? at.x : innerWidth / 2, y = at ? at.y : 0;
+    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    d.startViewTransition(() => setTheme(next)).ready.then(() => root.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+      { duration: 650, easing: "cubic-bezier(.65,0,.35,1)", pseudoElement: "::view-transition-new(root)" }
+    )).catch(() => {});
+  }
+  const nav = $(".top nav");
+  if (nav) {
+    themeBtn = el("button", "theme");
+    themeBtn.type = "button";
+    themeBtn.setAttribute("aria-label", "toggle light and dark theme");
+    themeBtn.innerHTML = '<span class="ico" aria-hidden="true">◐</span> theme';
+    themeBtn.addEventListener("click", e => {
+      const b = themeBtn.getBoundingClientRect();
+      toggleTheme(e.detail ? { x: e.clientX, y: e.clientY } : { x: b.left + b.width / 2, y: b.top + b.height / 2 });
+    });
+    nav.append(themeBtn);
+  }
+
+  /* scramble: letters decode left to right */
+  const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789/\\|_-<>#";
+  function scramble(node) {
+    if (reduce || node._busy) return;
+    const final = node.dataset.t || (node.dataset.t = node.textContent);
+    const steps = 14;
+    let f = 0;
+    node._busy = true;
+    const id = setInterval(() => {
+      f++;
+      const k = (f / steps) * final.length;
+      node.textContent = Array.from(final, (c, i) => (c === " " || i < k) ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0]).join("");
+      if (f >= steps) { clearInterval(id); node.textContent = final; node._busy = false; }
+    }, 32);
+  }
+  const h1t = $(".hero .type");
+  if (h1t) $(".hero h1").addEventListener("mouseenter", () => scramble(h1t));
+  $$(".index .name").forEach(n => n.closest("a").addEventListener("mouseenter", () => scramble(n)));
+
+  /* copy buttons on install commands */
+  $$("pre.cmd").forEach(pre => {
+    const wrap = el("div", "cmdwrap");
+    pre.replaceWith(wrap);
+    wrap.append(pre);
+    const b = el("button", "copy", "copy");
+    b.type = "button";
+    b.setAttribute("aria-label", "copy command");
+    wrap.append(b);
+    let timer;
+    const say = (t, ok) => { b.textContent = t; b.classList.toggle("ok", ok); clearTimeout(timer); timer = setTimeout(() => { b.textContent = "copy"; b.classList.remove("ok"); }, 1800); };
+    b.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(pre.textContent.trim()); say("copied ✓", true); }
+      catch (e) {
+        const r = d.createRange(); r.selectNodeContents(pre);
+        const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+        say("ctrl + c", false);
+      }
+    });
+  });
+
+  /* screenshots open full size */
+  const lb = el("dialog", "lb");
+  lb.setAttribute("aria-label", "screenshot");
+  const lbImg = el("img");
+  lb.append(lbImg);
+  lb.addEventListener("click", () => lb.close());
+  d.body.append(lb);
+  $$(".shot").forEach(img => {
+    const b = el("button", "zoombtn");
+    b.type = "button";
+    b.setAttribute("aria-label", "open screenshot full size");
+    img.replaceWith(b);
+    b.append(img);
+    b.addEventListener("click", () => { lbImg.src = img.currentSrc || img.src; lbImg.alt = img.alt; lb.showModal(); });
+  });
+
+  /* todoterm is a toy: hover moves the selection, click or space checks a task */
+  const todo = $("#todoterm .tui");
+  if (todo) {
+    const rows = $$(".t", todo), cnt = $(".cnt", todo);
+    let cur = Math.max(0, rows.findIndex(r => r.classList.contains("sel")));
+    const select = i => {
+      cur = (i + rows.length) % rows.length;
+      rows.forEach((r, k) => { r.classList.toggle("sel", k === cur); $(".gut", r).textContent = k === cur ? " › " : "   "; });
+    };
+    const toggle = r => {
+      const done = r.classList.toggle("done");
+      $(".box", r).textContent = done ? "[x] " : "[ ] ";
+      cnt.textContent = rows.filter(x => x.classList.contains("done")).length;
+    };
+    rows.forEach((r, k) => {
+      r.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") select(k); });
+      r.addEventListener("click", () => { select(k); toggle(r); });
+    });
+    todo.removeAttribute("role");
+    todo.setAttribute("role", "group");
+    todo.tabIndex = 0;
+    todo.title = "try it: hover, click, or j / k / space";
+    todo.addEventListener("keydown", e => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const k = e.key;
+      if (k === "j" || k === "ArrowDown") select(cur + 1);
+      else if (k === "k" || k === "ArrowUp") select(cur - 1);
+      else if (k === " " || k === "x" || k === "Enter") toggle(rows[cur]);
+      else return;
+      e.preventDefault(); e.stopPropagation();
+    });
+    const cap = $("figcaption span", todo.parentElement);
+    cap.append(el("span", "try", " · try it"));
+  }
+
+  /* reveal on scroll */
+  if (!reduce && "IntersectionObserver" in window) {
+    const items = [
+      ...$$(".group > header"), ...$$(".project > :not(ul):not(figure)"),
+      ...$$(".project li"), ...$$(".index li"), ...$$(".bottom"),
+    ];
+    items.forEach(n => {
+      n.classList.add("rv");
+      if (n.matches("li")) n.style.setProperty("--i", $$(":scope > li", n.parentElement).indexOf(n));
+    });
+    $$(".win").forEach(w => w.classList.add("rvw"));
+    const early = performance.now() < 900;
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const n = en.target;
+      if (n.classList.contains("rv")) {
+        const i = +n.style.getPropertyValue("--i") || 0;
+        n.style.transitionDelay = ((early && performance.now() < 900 ? 1300 : 0) + i * 70) + "ms";
+      }
+      n.classList.add("in");
+      io.unobserve(n);
+    }), { rootMargin: "0px 0px -8% 0px", threshold: 0.01 });
+    [...items, ...$$(".win")].forEach(n => io.observe(n));
+  }
+
+  /* progress bar and status line */
+  const bar = el("div", "progress");
+  bar.setAttribute("aria-hidden", "true");
+  d.body.append(bar);
+  let sl, slMode, slWhere, slPct;
+  if (home) {
+    sl = el("div", "sl");
+    sl.setAttribute("aria-hidden", "true");
+    slMode = el("span", "mode", "NORMAL");
+    slWhere = el("span", "where", "home");
+    slPct = el("span", "pct", "0%");
+    sl.append(slMode, slWhere, el("span", "grow"), el("span", "hint", "? help"), slPct);
+    d.body.append(sl);
+  }
+  let queued = false;
+  function update() {
+    queued = false;
+    const max = root.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
+    bar.style.transform = `scaleX(${p})`;
+    if (!sl) return;
+    let idx = -1;
+    projects.forEach((pr, i) => { if (pr.getBoundingClientRect().top < innerHeight * 0.45) idx = i; });
+    slWhere.textContent = idx < 0 ? "home" : `${String(idx + 1).padStart(2, "0")}/${String(projects.length).padStart(2, "0")} ${$("h3", projects[idx]).childNodes[1].textContent}`;
+    slPct.textContent = Math.round(p * 100) + "%";
+    sl.classList.toggle("show", scrollY > 240);
+  }
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  addEventListener("scroll", queue, { passive: true });
+  addEventListener("resize", queue);
+  update();
+
+  /* jumping to a project blinks its title once the scroll settles */
+  const settle = fn => {
+    let last = -1, n = 0;
+    const t = () => { if (scrollY === last) { if (++n > 6) return fn(); } else { n = 0; last = scrollY; } requestAnimationFrame(t); };
+    requestAnimationFrame(t);
+  };
+  const flash = pr => {
+    const h = $("h3", pr);
+    if (!h || reduce) return;
+    h.classList.remove("hit"); void h.offsetWidth; h.classList.add("hit");
+  };
+  const hashTarget = () => { const t = location.hash && d.getElementById(decodeURIComponent(location.hash.slice(1))); return t && t.classList.contains("project") ? t : null; };
+  addEventListener("hashchange", () => { const t = hashTarget(); if (t) settle(() => flash(t)); });
+  if (hashTarget()) addEventListener("load", () => settle(() => flash(hashTarget())), { once: true });
+  const go = pr => { pr.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); settle(() => flash(pr)); };
+
+  /* ascii rain, because of the name */
+  const cv = el("canvas", "rain");
+  cv.setAttribute("aria-hidden", "true");
+  d.body.append(cv);
+  const ctx = cv.getContext("2d");
+  const FS = 14, COL = FS * 1.2;
+  let drops = [], raining = false, raf = 0, last = 0, W = 0, H = 0, stopTimer;
+  const spawn = init => ({ x: Math.floor(Math.random() * (W / COL)) * COL, y: init ? Math.random() * H : -Math.random() * H * 0.4, v: 6 + Math.random() * 7, len: 3 + ((Math.random() * 6) | 0), c: Math.random() < 0.8 ? "|" : "¦" });
+  function size() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = `${FS}px "JetBrains Mono", monospace`;
+    const n = Math.round(W / COL * 0.4);
+    while (drops.length < n) drops.push(spawn(true));
+    drops.length = n;
+  }
+  function frame(t) {
+    const dt = Math.min(48, t - last) / 16.67; last = t;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = getComputedStyle(root).getPropertyValue("--ink").trim() || "#000";
+    for (const dr of drops) {
+      for (let k = 0; k < dr.len; k++) { ctx.globalAlpha = 0.3 * (1 - k / dr.len); ctx.fillText(dr.c, dr.x, dr.y - k * FS); }
+      dr.y += dr.v * dt;
+      if (dr.y - dr.len * FS > H) Object.assign(dr, spawn(false));
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  function toggleRain() {
+    raining = !raining;
+    clearTimeout(stopTimer);
+    if (slMode) slMode.textContent = raining ? "RAIN" : "NORMAL";
+    if (raining) { size(); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); cv.classList.add("on"); }
+    else { cv.classList.remove("on"); stopTimer = setTimeout(() => cancelAnimationFrame(raf), 1000); }
+  }
+  addEventListener("resize", () => { if (raining) size(); });
+  const cur = $(".hero .cur") || $(".lost .cur");
+  if (cur) { cur.classList.add("live"); cur.title = "rain?"; cur.addEventListener("click", toggleRain); }
+
+  /* keyboard */
+  const help = $("#help");
+  if (help) help.addEventListener("click", e => { if (e.target === help) help.close(); });
+  addEventListener("keydown", e => {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (/^(input|textarea|select)$/i.test(e.target.tagName) || e.target.isContentEditable) return;
+    const k = e.key;
+    if (k === "?" && help) { help.open ? help.close() : help.showModal(); return; }
+    if (d.querySelector("dialog[open]")) return;
+    if (k === "t") toggleTheme();
+    else if (k === "r") toggleRain();
+    else if (k === "g") scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    else if (k === "G") scrollTo({ top: root.scrollHeight, behavior: reduce ? "auto" : "smooth" });
+    else if (home && k === "j") { const n = projects.find(p => p.getBoundingClientRect().top > 40); n ? go(n) : scrollTo({ top: root.scrollHeight, behavior: reduce ? "auto" : "smooth" }); }
+    else if (home && k === "k") { const p = projects.filter(p => p.getBoundingClientRect().top < 8).pop(); p ? go(p) : scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }); }
+    else if (home && /^[1-9]$/.test(k) && projects[k - 1]) go(projects[k - 1]);
+    else return;
+    e.preventDefault();
+  });
+
+  /* 404: show what you typed, shell style */
+  const path = $("#path");
+  if (path) { path.textContent = `cd: no such file or directory: ${decodeURIComponent(location.pathname)}`; path.hidden = false; }
+
+  console.log("%cgloomyweather", "font-family:monospace;font-weight:bold;font-size:14px", "\npress ? for keys. press r for rain.");
+})();

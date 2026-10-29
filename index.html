@@ -17,10 +17,12 @@
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="style.css?v=5">
+<script src="script.js?v=1" defer></script>
 </head>
 <body>
-<div class="page">
+<div class="page" id="top">
 <header class="top">
   <a href="./">gloomyweather</a>
   <nav aria-label="sections"><a href="#omarchy">omarchy</a><a href="https://github.com/gloomyweather">github</a></nav>
@@ -28,7 +30,7 @@
 
 <main>
 <section class="hero">
-  <h1>gloomyweather<span class="cur" aria-hidden="true"></span></h1>
+  <h1><span class="type">gloomyweather</span><span class="cur" aria-hidden="true"></span></h1>
   <p class="lead">small, quiet tools for the terminal and omarchy.</p>
   <p class="more">each one does one thing and stays out of the way. all of them run on linux
   and plug into <a href="https://omarchy.org">omarchy</a>: a hotkey, the launcher, the bar,
@@ -64,23 +66,11 @@
   </article>
 
   <article class="project" id="todoterm">
-    <h3><span class="n">02</span>todoterm<span class="mark" aria-hidden="true">૮ ˶ᵔ ᵕ ᵔ˶ ა</span></h3>
+    <h3><span class="n">02</span>todoterm<span class="mark bob" aria-hidden="true">૮ ˶ᵔ ᵕ ᵔ˶ ა</span></h3>
     <p class="tagline">a minimalist task manager for the terminal.</p>
     <figure class="win">
       <figcaption><span>todoterm</span><span>super + alt + t</span></figcaption>
-      <pre class="tui" role="img" aria-label="todoterm: a list of eight tasks with priorities and due dates, one selected"> <span class="b"> ~ todo list ~</span>  (=^<span class="g">･</span>ω<span class="g">･</span>^=)                                                     2/8
- <span class="m">──────────────────────────────────────────────────────────────────────────────────</span>
-    <span class="m">[ ] </span><span class="b">!!!</span> finish the jot readme                                             today
-    <span class="m">[ ] </span><span class="b">!!</span> reply to the landlord about the heater                          <span class="m">tomorrow</span>
-    <span class="m">[ ] </span><span class="b">!</span> renew library books                                                   <span class="m">wed</span>
- <span class="r"> › </span><span class="r m">[ ] </span><span class="r">book a dentist appointment                                              </span><span class="r m">fri</span>
-    <span class="m">[ ] </span>try the new omarchy theme
-    <span class="m">[ ] </span>read chapter 16 of the rust book                                     <span class="m">nov 03</span>
-    <span class="m">[x] !!</span> <span class="s m">back up dotfiles</span>
-    <span class="m">[x] </span><span class="s m">buy coffee beans</span>
-
- <span class="m">──────────────────────────────────────────────────────────────────────────────────</span>
- <span class="b"> a</span><span class="m"> add </span><span class="b"> spc</span><span class="m"> done </span><span class="b"> e</span><span class="m"> edit </span><span class="b"> d</span><span class="m"> delete </span><span class="b"> u</span><span class="m"> undo </span><span class="b"> /</span><span class="m"> filter </span><span class="b"> J/K</span><span class="m"> move </span><span class="b"> p</span><span class="m"> priority </span><span class="b"> ?</span><span class="m"> help</span></pre>
+      <pre class="tui" style="--lines:13" role="img" aria-label="todoterm: a list of eight tasks with priorities and due dates, one selected"><span class="ln"> <span class="b"> ~ todo list ~</span>  (=^<span class="g">･</span>ω<span class="g">･</span>^=)                                                     <span class="cnt">2</span>/8</span><span class="ln"> <span class="m">──────────────────────────────────────────────────────────────────────────────────</span></span><span class="ln t"><span class="gut">   </span><span class="box m">[ ] </span><span class="b">!!!</span> <span class="tx">finish the jot readme</span>                                             today</span><span class="ln t"><span class="gut">   </span><span class="box m">[ ] </span><span class="b">!!</span> <span class="tx">reply to the landlord about the heater</span>                          <span class="m">tomorrow</span></span><span class="ln t"><span class="gut">   </span><span class="box m">[ ] </span><span class="b">!</span> <span class="tx">renew library books</span>                                                   <span class="m">wed</span></span><span class="ln t sel"><span class="gut"> › </span><span class="box m">[ ] </span><span class="tx">book a dentist appointment</span>                                              <span class="m">fri</span></span><span class="ln t"><span class="gut">   </span><span class="box m">[ ] </span><span class="tx">try the new omarchy theme</span></span><span class="ln t"><span class="gut">   </span><span class="box m">[ ] </span><span class="tx">read chapter 16 of the rust book</span>                                     <span class="m">nov 03</span></span><span class="ln t done"><span class="gut">   </span><span class="box m">[x] </span><span class="b">!!</span> <span class="tx">back up dotfiles</span></span><span class="ln t done"><span class="gut">   </span><span class="box m">[x] </span><span class="tx">buy coffee beans</span></span><span class="ln"> </span><span class="ln"> <span class="m">──────────────────────────────────────────────────────────────────────────────────</span></span><span class="ln"> <span class="b"> a</span><span class="m"> add </span><span class="b"> spc</span><span class="m"> done </span><span class="b"> e</span><span class="m"> edit </span><span class="b"> d</span><span class="m"> delete </span><span class="b"> u</span><span class="m"> undo </span><span class="b"> /</span><span class="m"> filter </span><span class="b"> J/K</span><span class="m"> move </span><span class="b"> p</span><span class="m"> priority </span><span class="b"> ?</span><span class="m"> help</span></span></pre>
     </figure>
     <ul>
       <li>one window, one list. vim-like keys, priorities and due dates right in the text: <code>buy milk !! @fri</code>.</li>
@@ -95,11 +85,11 @@ contrib/omarchy/install.sh</pre>
   </article>
 
   <article class="project" id="jot">
-    <h3><span class="n">03</span>jot<span class="mark" aria-hidden="true">◆</span></h3>
+    <h3><span class="n">03</span>jot<span class="mark rot" aria-hidden="true">◆</span></h3>
     <p class="tagline">quick notes for the terminal.</p>
     <figure class="win">
       <figcaption><span>jot</span><span>super + alt + n</span></figcaption>
-      <pre class="tui" role="img" aria-label="jot: a list of five notes on the left, the selected note rendered on the right">  ◆ <span class="b">jot</span><span class="m">  ·  5 notes</span>                                                        <span class="m">~/Notes</span>
+      <pre class="tui" style="--lines:21" role="img" aria-label="jot: a list of five notes on the left, the selected note rendered on the right">  ◆ <span class="b">jot</span><span class="m">  ·  5 notes</span>                                                        <span class="m">~/Notes</span>
   <span class="m">────────────────────────────────────────────────────────────────────────────────</span>
 
   <span class="m">/ search</span>                       <span class="m">│</span>   <span class="m">edited 3d ago · 52 words · </span>pinned
@@ -134,7 +124,7 @@ contrib/omarchy/install.sh</pre>
   </article>
 
   <article class="project" id="ember">
-    <h3><span class="n">04</span>ember<span class="mark" aria-hidden="true">◐</span></h3>
+    <h3><span class="n">04</span>ember<span class="mark rot" aria-hidden="true">◐</span></h3>
     <p class="tagline">a black-and-white omarchy theme with one orange accent.</p>
     <figure class="win">
       <figcaption><span>ember · ember-light</span><span>4 of 24 wallpapers</span></figcaption>
@@ -152,7 +142,7 @@ omarchy theme set ember</pre>
     <p class="meta"><span>theme · mit</span><span><a href="https://github.com/gloomyweather/omarchy-ember-theme">dark</a><a href="https://github.com/gloomyweather/omarchy-ember-light-theme">light</a></span></p>
   </article>
   <article class="project" id="mono">
-    <h3><span class="n">05</span>mono<span class="mark" aria-hidden="true">▒</span></h3>
+    <h3><span class="n">05</span>mono<span class="mark pulse" aria-hidden="true">▒</span></h3>
     <p class="tagline">a grayscale omarchy theme with real colors in the terminal.</p>
     <figure class="win">
       <figcaption><span>mono</span><span>neovim and foot on the contours wallpaper</span></figcaption>
@@ -172,9 +162,24 @@ omarchy theme set mono</pre>
 </main>
 
 <footer class="bottom">
-  <span>plain html. no scripts, no third parties.</span>
-  <a href="https://github.com/gloomyweather">github.com/gloomyweather</a>
+  <span>plain html and a little vanilla js. no third parties, no tracking.</span>
+  <span><a class="up" href="#top">↑ top</a><a href="https://github.com/gloomyweather">github.com/gloomyweather</a></span>
 </footer>
 </div>
+<dialog id="help" class="help" aria-labelledby="help-h">
+  <div class="pad">
+    <h2 id="help-h">keys</h2>
+    <dl>
+      <dt><kbd>j</kbd><kbd>k</kbd></dt><dd>next / previous project</dd>
+      <dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd>jump to a project</dd>
+      <dt><kbd>g</kbd><kbd>G</kbd></dt><dd>top / bottom</dd>
+      <dt><kbd>t</kbd></dt><dd>light / dark</dd>
+      <dt><kbd>r</kbd></dt><dd>rain</dd>
+      <dt><kbd>?</kbd></dt><dd>this window</dd>
+    </dl>
+    <p>in the todoterm window: hover, click, or j / k / space.</p>
+    <p>esc closes.</p>
+  </div>
+</dialog>
 </body>
 </html>
