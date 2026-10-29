@@ -198,6 +198,30 @@
     [...items, ...$$(".win")].forEach(n => io.observe(n));
   }
 
+  /* smooth wheel: mouse wheels glide, trackpads and keys stay native */
+  if (!reduce && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    let target = scrollY, cur = scrollY, running = false, last = 0;
+    const max = () => root.scrollHeight - innerHeight;
+    const step = t => {
+      const dt = Math.min(48, t - last) / 16.67; last = t;
+      cur += (target - cur) * (1 - Math.pow(0.88, dt));
+      if (Math.abs(target - cur) < 0.5) cur = target;
+      scrollTo({ top: cur, behavior: "instant" });
+      if (cur !== target) requestAnimationFrame(step); else running = false;
+    };
+    addEventListener("scroll", () => { if (!running) target = cur = scrollY; }, { passive: true });
+    addEventListener("wheel", e => {
+      if (e.ctrlKey || e.defaultPrevented || Math.abs(e.deltaX) > Math.abs(e.deltaY) || d.querySelector("dialog[open]")) return;
+      if (e.target.closest && e.target.closest("pre, .tui")) { const p = e.target.closest("pre"); if (p && p.scrollWidth > p.clientWidth && Math.abs(e.deltaX)) return; }
+      const line = e.deltaMode === 1;
+      if (!line && (Math.abs(e.deltaY) < 50 || !Number.isInteger(e.deltaY))) return;
+      e.preventDefault();
+      if (!running) { cur = scrollY; target = scrollY; }
+      target = Math.max(0, Math.min(max(), target + (line ? e.deltaY * 40 : e.deltaY)));
+      if (!running) { running = true; last = performance.now(); requestAnimationFrame(step); }
+    }, { passive: false });
+  }
+
   /* progress bar and status line */
   const bar = el("div", "progress");
   bar.setAttribute("aria-hidden", "true");
