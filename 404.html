@@ -6,7 +6,9 @@
 <title>not found · gloomyweather</title>
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/style.css?v=5">
+<script src="/script.js?v=1" defer></script>
 </head>
 <body>
 <div class="page">
@@ -15,8 +17,9 @@
   <nav aria-label="sections"><a href="/#omarchy">omarchy</a><a href="https://github.com/gloomyweather">github</a></nav>
 </header>
 <main class="lost">
-  <h1>404<span class="cur" aria-hidden="true"></span></h1>
+  <h1><span class="type">404</span><span class="cur" aria-hidden="true"></span></h1>
   <p>nothing here. <a href="/">go home</a>.</p>
+  <p class="path" id="path" hidden></p>
 </main>
 </div>
 </body>
