@@ -298,6 +298,47 @@
     bottom.firstElementChild.after(w);
   }
 
+  /* easter egg: a small orange visitor (type "clawd" or "claude") */
+  let clawdBusy = false;
+  async function clawd() {
+    if (clawdBusy) return;
+    clawdBusy = true;
+    const body = ["..#######..", "..#o###o#..", "###########", "..#######.."];
+    const legs = [["..#.#.#.#.."], ["..##.#.##.."]];
+    const draw = (leg, shut) => {
+      const rows = [...body, ...legs[leg]];
+      let s = "";
+      rows.forEach((r, y) => Array.from(r).forEach((ch, x) => { if (ch === "#") s += `<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`; else if (ch === "o") s += shut ? `<rect x="${x}" y="${y}" width="1.02" height="1.02"/>` : `<rect class="eye" x="${x}" y="${y}" width="1.02" height="1.02"/>`; }));
+      svg.innerHTML = s;
+    };
+    const wrap = el("div", "clawd");
+    wrap.setAttribute("aria-hidden", "true");
+    const bubble = el("div", "bubble", "hi. i helped build this site.");
+    const svg = d.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 11 5");
+    wrap.append(bubble, svg);
+    d.body.append(wrap);
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const W = 55, mid = Math.max(0, (innerWidth - W) / 2);
+    let leg = 0, timer = 0;
+    const walkOn = () => { timer = setInterval(() => { leg ^= 1; draw(leg, false); svg.style.transform = leg ? "translateY(-1px)" : ""; }, 170); };
+    const walkOff = () => { clearInterval(timer); leg = 0; draw(0, false); svg.style.transform = ""; };
+    const walk = (a, b, ms) => wrap.animate([{ transform: `translateX(${a}px)` }, { transform: `translateX(${b}px)` }], { duration: ms, easing: "linear", fill: "forwards" }).finished;
+    draw(0, false);
+    if (reduce) {
+      wrap.style.transform = `translateX(${mid}px)`; bubble.classList.add("on");
+      await sleep(3200);
+    } else {
+      walkOn(); await walk(-70, mid, 2300); walkOff();
+      bubble.classList.add("on");
+      await sleep(900); draw(0, true); await sleep(170); draw(0, false); await sleep(1700);
+      bubble.classList.remove("on"); await sleep(250);
+      walkOn(); await walk(mid, innerWidth + 20, 2300); walkOff();
+    }
+    wrap.remove();
+    clawdBusy = false;
+  }
+
   /* command palette: ctrl+k or / */
   const pal = el("dialog", "pal");
   pal.setAttribute("aria-label", "command palette");
@@ -319,6 +360,7 @@
       if (src) c.push({ id: "src:" + name, search: true, label: "open source: " + name, hint: "github", desc: src.href.replace("https://", ""), run: () => open(src.href, "_blank", "noopener") });
       if (shot) c.push({ id: "shot:" + name, search: true, label: "view screenshot: " + name, hint: "view", desc: "opens it full size", run: () => shot.click() });
     });
+    c.push({ id: "clawd", search: true, label: "say hi to clawd", hint: "hi", kw: "claude clawd mascot crab", desc: "a small visitor", run: clawd });
     c.push({ id: "theme", group: "actions", label: "switch to " + (isDark() ? "light" : "dark") + " theme", hint: "t", desc: "the page keeps your choice", run: () => toggleTheme() });
     c.push({ id: "rain", group: "actions", label: (raining ? "stop" : "start") + " the rain", hint: "r", desc: "ascii rain, off until you reload", run: toggleRain });
     c.push({ id: "random", group: "actions", label: "surprise me", hint: "random", kw: "random lucky", desc: "jumps to a random project", run: () => go(projects[(Math.random() * projects.length) | 0]) });
@@ -413,8 +455,9 @@
   let typed = "";
   addEventListener("keypress", e => {
     if (/^(input|textarea)$/i.test(e.target.tagName)) return;
-    typed = (typed + e.key).slice(-4);
-    if (typed === "sudo") toast("nice try. you are not in the sudoers file.");
+    typed = (typed + e.key).slice(-6).toLowerCase();
+    if (typed.endsWith("sudo")) toast("nice try. you are not in the sudoers file.");
+    else if (typed.endsWith("clawd") || typed.endsWith("claude")) clawd();
   });
 
   /* keyboard */
