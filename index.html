@@ -30,11 +30,25 @@
 
 <main>
 <section class="hero">
+  <div class="sky" aria-hidden="true">
+    <pre class="cloud c1">    .--.
+ .-(    ).
+(___.__)__)</pre>
+    <pre class="cloud c2">       .--.
+    .-(    ).--.
+  .(            ).
+ (___.__)__)___)</pre>
+    <pre class="cloud c3">  .--.
+.-(  ).
+(__.__)</pre>
+  </div>
+  <p class="prompt" aria-hidden="true"><span style="--n:8">$ whoami</span></p>
   <h1><span class="type">gloomyweather</span><span class="cur" aria-hidden="true"></span></h1>
   <p class="lead">small, quiet tools for the terminal and omarchy.</p>
   <p class="more">each one does one thing and stays out of the way. all of them run on linux
   and plug into <a href="https://omarchy.org">omarchy</a>: a hotkey, the launcher, the bar,
   the current theme.</p>
+  <p class="stats"><span><b data-n="5">5</b> projects</span><span><b data-n="30">30</b> wallpapers</span><span><b data-n="1">1</b> font</span><span><b data-n="0">0</b> trackers</span></p>
 </section>
 
 <nav class="index" aria-label="projects">
@@ -46,6 +60,8 @@
     <li><a href="#mono"><span class="n">05</span><span class="name">mono</span><span class="tag">a grayscale omarchy theme with real colors in the terminal.</span></a></li>
   </ol>
 </nav>
+
+<div class="ticker" aria-hidden="true"><div><span>linux · omarchy · rust · shell · hotkeys · themes · terminal · mit · gpl-3.0 · quiet by default · </span><span>linux · omarchy · rust · shell · hotkeys · themes · terminal · mit · gpl-3.0 · quiet by default · </span></div></div>
 
 <section class="group" id="omarchy" aria-labelledby="omarchy-h">
   <header><h2 id="omarchy-h">omarchy</h2><p>plugins, apps and themes for omarchy.</p></header>

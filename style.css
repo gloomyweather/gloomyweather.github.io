@@ -56,20 +56,44 @@ code { transition: background-color .15s, color .15s; }
 
 /* intro: the name is typed, the cursor travels with it */
 .hero { padding: 96px 0 72px; }
-.hero h1 { --n: 13; font-size: clamp(34px, 8vw, 60px); line-height: 1; font-weight: 700; letter-spacing: -0.035em; margin: 0 0 28px; }
-.type { display: inline-block; animation: typein calc(var(--n) * 70ms) steps(var(--n)) .25s both; }
+.hero h1 { --n: 13; --d: 1s; font-size: clamp(34px, 8vw, 60px); line-height: 1; font-weight: 700; letter-spacing: -0.035em; margin: 0 0 28px; }
+.type { display: inline-block; animation: typein calc(var(--n) * 70ms) steps(var(--n)) var(--d, .25s) both; }
 @keyframes typein { from { clip-path: inset(-.1em 100% -.35em 0); } to { clip-path: inset(-.1em 0 -.35em 0); } }
 .cur {
   display: inline-block; width: 0.55em; height: 0.82em; margin-left: 0.06em; background: var(--ink); vertical-align: -0.04em;
-  animation: curmove calc(var(--n) * 70ms) steps(var(--n)) .25s backwards, blink 1.2s steps(1) calc(var(--n) * 70ms + .25s) infinite;
+  animation: curmove calc(var(--n) * 70ms) steps(var(--n)) var(--d, .25s) backwards, blink 1.2s steps(1) calc(var(--n) * 70ms + var(--d, .25s)) infinite;
 }
 @keyframes curmove { from { transform: translateX(calc(var(--n) * -0.565em)); } }
 @keyframes blink { 50% { opacity: 0; } }
 .lead { margin: 0 0 14px; }
 .hero p { max-width: 60ch; }
-.hero .lead { animation: up .9s var(--out) 1.25s both; }
-.hero .more { color: var(--faint); animation: up .9s var(--out) 1.4s both; }
+.hero .lead { animation: up .9s var(--out) 2.05s both; }
+.hero .more { color: var(--faint); animation: up .9s var(--out) 2.2s both; }
 .hero .cur.live { cursor: pointer; }
+.hero { position: relative; }
+.hero > :not(.sky) { position: relative; z-index: 1; }
+.prompt { margin: 0 0 18px; font-size: 13px; color: var(--faint); }
+.prompt span { display: inline-block; animation: typein calc(var(--n) * 70ms) steps(var(--n)) .2s both; }
+.stats { display: flex; flex-wrap: wrap; gap: 4px 3ch; margin: 28px 0 0; font-size: 12px; color: var(--faint); animation: up .9s var(--out) 2.35s both; }
+.stats b { color: var(--ink); font-weight: 700; }
+
+/* clouds drift behind the intro */
+.sky { position: absolute; z-index: 0; top: 0; bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); overflow: hidden; pointer-events: none; }
+.cloud { position: absolute; margin: 0; color: var(--faint); opacity: .5; line-height: 1.15; font-size: 14px; white-space: pre; animation: drift linear infinite; }
+.c1 { top: 12%; animation-duration: 160s; animation-delay: -40s; }
+.c2 { top: 52%; animation-duration: 230s; animation-delay: -150s; opacity: .32; }
+.c3 { top: 78%; animation-duration: 120s; animation-delay: -95s; opacity: .4; }
+@keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(110vw); } }
+
+/* ticker between the index and the projects */
+.ticker { margin-top: 40px; overflow: hidden; border-bottom: 1px solid var(--faint); padding-bottom: 6px; font-size: 12px; color: var(--faint); white-space: nowrap; }
+.ticker > div { display: inline-flex; animation: ticker 60s linear infinite; }
+.ticker:hover > div { animation-play-state: paused; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+
+/* block cursor: trails the mouse and wraps links */
+.blk { position: fixed; z-index: 95; top: 0; left: 0; width: 10px; height: 10px; background: #fff; mix-blend-mode: difference; pointer-events: none; opacity: 0; transition: opacity .25s; will-change: transform, width, height; }
+.blk.on { opacity: 1; }
 
 /* index: a row fills from the left, the arrow drops in */
 .index ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
@@ -239,6 +263,7 @@ kbd { font: inherit; font-size: 12px; border: 1px solid var(--ink); padding: 0 .
   .project h3 .n { margin-right: 1ch; }
   .cmd { font-size: 12.5px; padding: 12px 14px; }
   .sl .hint { display: none; }
+  .cloud { font-size: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

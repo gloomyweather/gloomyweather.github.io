@@ -57,6 +57,29 @@
   if (h1t) $(".hero h1").addEventListener("mouseenter", () => scramble(h1t));
   $$(".index .name").forEach(n => n.closest("a").addEventListener("mouseenter", () => scramble(n)));
 
+  /* project names decode when they scroll into view */
+  $$(".project h3").forEach(h => {
+    const t = Array.from(h.childNodes).find(n => n.nodeType === 3 && n.textContent.trim());
+    if (!t) return;
+    const sp = el("span", "pn", t.textContent);
+    t.replaceWith(sp);
+  });
+
+  /* stats count up once the intro has played */
+  const counters = $$(".stats b[data-n]");
+  if (counters.length && !reduce) {
+    counters.forEach(b => { b.textContent = "0"; });
+    setTimeout(() => {
+      const t0 = performance.now();
+      const step = t => {
+        const p = Math.min(1, (t - t0) / 1100), e = 1 - Math.pow(1 - p, 3);
+        counters.forEach(b => { b.textContent = Math.round(+b.dataset.n * e); });
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, 2400);
+  }
+
   /* copy buttons on install commands */
   $$("pre.cmd").forEach(pre => {
     const wrap = el("div", "cmdwrap");
@@ -149,9 +172,34 @@
         n.style.transitionDelay = ((early && performance.now() < 900 ? 1300 : 0) + i * 70) + "ms";
       }
       n.classList.add("in");
+      if (n.matches(".project > h3")) setTimeout(() => scramble($(".pn", n)), 250);
       io.unobserve(n);
     }), { rootMargin: "0px 0px -8% 0px", threshold: 0.01 });
     [...items, ...$$(".win")].forEach(n => io.observe(n));
+  }
+
+  /* block cursor */
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches && !reduce) {
+    const blk = el("div", "blk");
+    blk.setAttribute("aria-hidden", "true");
+    d.body.append(blk);
+    let tx = 0, ty = 0, tw = 10, th = 10, x = 0, y = 0, w = 10, h = 10, run = false;
+    const loop = () => {
+      x += (tx - x) * 0.28; y += (ty - y) * 0.28; w += (tw - w) * 0.28; h += (th - h) * 0.28;
+      blk.style.width = w + "px"; blk.style.height = h + "px";
+      blk.style.transform = `translate(${x}px, ${y}px)`;
+      if (Math.abs(tx - x) + Math.abs(ty - y) + Math.abs(tw - w) + Math.abs(th - h) > 0.2) requestAnimationFrame(loop); else run = false;
+    };
+    const kick = () => { if (!run) { run = true; requestAnimationFrame(loop); } };
+    addEventListener("pointermove", e => {
+      if (e.pointerType !== "mouse") return;
+      const a = e.target.closest && e.target.closest("a:not(.index a), button:not(.zoombtn):not(.copy)");
+      if (a) { const r = a.getBoundingClientRect(); tx = r.left - 3; ty = r.top - 1; tw = r.width + 6; th = r.height + 2; }
+      else { tx = e.clientX + 8; ty = e.clientY + 8; tw = 10; th = 10; }
+      if (!blk.classList.contains("on")) { x = tx; y = ty; blk.classList.add("on"); }
+      kick();
+    }, { passive: true });
+    root.addEventListener("mouseleave", () => blk.classList.remove("on"));
   }
 
   /* progress bar and status line */
