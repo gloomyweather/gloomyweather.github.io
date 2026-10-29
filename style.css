@@ -16,6 +16,9 @@
 :root[data-theme="dark"] { --ink: #fff; --paper: #000; --faint: #8a8a8a; color-scheme: dark; }
 :root[data-theme="light"] { color-scheme: light; }
 * { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+html { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
 html { background: var(--paper); color: var(--ink); -webkit-text-size-adjust: 100%; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
