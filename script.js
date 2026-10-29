@@ -7,6 +7,15 @@
   const el = (tag, cls, text) => { const e = d.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
   const store = (k, v) => { try { v === undefined ? localStorage.getItem(k) : localStorage.setItem(k, v); } catch (e) {} };
 
+  let toastEl, toastTimer;
+  const toast = msg => {
+    if (!toastEl) { toastEl = el("div", "toast"); toastEl.setAttribute("role", "status"); d.body.append(toastEl); }
+    toastEl.textContent = msg;
+    toastEl.classList.remove("show"); void toastEl.offsetWidth; toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+  };
+
   const projects = $$(".project");
   const home = !!projects.length;
 
@@ -17,6 +26,7 @@
   function toggleTheme(at) {
     const next = isDark() ? "light" : "dark";
     if (themeBtn) themeBtn.firstElementChild.style.transform = `rotate(${++turns * 180}deg)`;
+    toast("theme: " + next);
     if (!d.startViewTransition || reduce) return setTheme(next);
     const x = at ? at.x : innerWidth / 2, y = at ? at.y : 0;
     const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
@@ -90,7 +100,8 @@
     b.setAttribute("aria-label", "copy command");
     wrap.append(b);
     let timer;
-    const say = (t, ok) => { b.textContent = t; b.classList.toggle("ok", ok); clearTimeout(timer); timer = setTimeout(() => { b.textContent = "copy"; b.classList.remove("ok"); }, 1800); };
+    const say = (t, ok) => {
+      if (ok) toast("install command copied"); b.textContent = t; b.classList.toggle("ok", ok); clearTimeout(timer); timer = setTimeout(() => { b.textContent = "copy"; b.classList.remove("ok"); }, 1800); };
     b.addEventListener("click", async () => {
       try { await navigator.clipboard.writeText(pre.textContent.trim()); say("copied ✓", true); }
       catch (e) {
@@ -116,6 +127,34 @@
     b.append(img);
     b.addEventListener("click", () => { lbImg.src = img.currentSrc || img.src; lbImg.alt = img.alt; lb.showModal(); });
   });
+
+  /* screenshots tilt toward the pointer */
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches && !reduce) {
+    $$(".zoombtn").forEach(b => {
+      b.addEventListener("pointermove", e => {
+        const r = b.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+        b.style.transition = "transform .12s linear";
+        b.style.transform = `perspective(1000px) rotateY(${px * 5}deg) rotateX(${-py * 4}deg)`;
+      });
+      b.addEventListener("pointerleave", () => { b.style.transition = "transform .6s cubic-bezier(.2,.7,.2,1)"; b.style.transform = ""; });
+    });
+  }
+
+  /* ripples where you click */
+  addEventListener("pointerdown", e => {
+    if (reduce || e.target.closest("dialog, input")) return;
+    for (let i = 0; i < 2; i++) {
+      const r = el("span", "rip");
+      r.style.left = e.clientX + "px"; r.style.top = e.clientY + "px"; r.style.animationDelay = i * 140 + "ms";
+      d.body.append(r);
+      r.addEventListener("animationend", () => r.remove());
+    }
+  }, { passive: true });
+
+  /* tab title notices when you leave */
+  const title = d.title;
+  d.addEventListener("visibilitychange", () => { d.title = d.hidden ? "still raining · " + title : title; });
 
   /* todoterm is a toy: hover moves the selection, click or space checks a task */
   const todo = $("#todoterm .tui");
@@ -213,7 +252,7 @@
     slMode = el("span", "mode", "NORMAL");
     slWhere = el("span", "where", "home");
     slPct = el("span", "pct", "0%");
-    sl.append(slMode, slWhere, el("span", "grow"), el("span", "hint", "? help"), slPct);
+    sl.append(slMode, slWhere, el("span", "grow"), el("span", "hint", "/ search · ? help"), slPct);
     d.body.append(sl);
   }
   let queued = false;
@@ -298,7 +337,7 @@
     if (on) { size(); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); cv.classList.add("on"); }
     else { cv.classList.remove("on"); stopTimer = setTimeout(() => cancelAnimationFrame(raf), 1000); }
   }
-  const toggleRain = () => setRain(!raining, true);
+  const toggleRain = () => { setRain(!raining, true); toast(raining ? "rain: on" : "rain: off"); };
   addEventListener("resize", () => { if (raining) size(); });
   if (nav) {
     rainBtn = el("button", "theme", "rain");
@@ -319,13 +358,68 @@
     bottom.firstElementChild.after(w);
   }
 
+  /* command palette: ctrl+k or / */
+  const pal = el("dialog", "pal");
+  pal.setAttribute("aria-label", "command palette");
+  pal.innerHTML = '<div class="pin"><span aria-hidden="true">›</span><input type="text" spellcheck="false" autocomplete="off" placeholder="type a command or a project" aria-label="search"></div><ul role="listbox"></ul><p class="phint">↑↓ move · ⏎ run · esc close</p>';
+  d.body.append(pal);
+  const pin = $("input", pal), plist = $("ul", pal);
+  let items = [], psel = 0;
+  const jump = y => scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+  const commands = () => {
+    const c = [];
+    projects.forEach((p, i) => {
+      const name = $(".pn", p).textContent, cmd = $("pre.cmd", p), src = $(".meta a:last-child", p);
+      c.push({ label: "go to " + name, hint: String(i + 1), run: () => go(p) });
+      if (cmd) c.push({ label: "copy install command: " + name, hint: "copy", run: () => navigator.clipboard.writeText(cmd.textContent.trim()).then(() => toast("install command copied"), () => toast("press ctrl + c on the command")) });
+      if (src) c.push({ label: "open source: " + name, hint: "github", run: () => open(src.href, "_blank", "noopener") });
+    });
+    c.push({ label: "switch to " + (isDark() ? "light" : "dark") + " theme", hint: "t", run: () => toggleTheme() });
+    c.push({ label: (raining ? "stop" : "start") + " the rain", hint: "r", run: toggleRain });
+    c.push({ label: "scroll to top", hint: "g", run: () => jump(0) });
+    c.push({ label: "scroll to bottom", hint: "G", run: () => jump(root.scrollHeight) });
+    c.push({ label: "open github profile", hint: "github", run: () => open("https://github.com/gloomyweather", "_blank", "noopener") });
+    if (help) c.push({ label: "show keys", hint: "?", run: () => help.showModal() });
+    return c;
+  };
+  function render() {
+    const terms = pin.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const all = commands().filter(c => terms.every(t => (c.label + " " + c.hint).toLowerCase().includes(t)));
+    all.sort((a, b) => (b.label.toLowerCase().startsWith(terms[0] || "\0") ? 1 : 0) - (a.label.toLowerCase().startsWith(terms[0] || "\0") ? 1 : 0));
+    items = all; psel = Math.min(psel, Math.max(0, items.length - 1));
+    plist.replaceChildren(...items.map((c, i) => { const li = el("li"); li.setAttribute("role", "option"); li.append(el("span", "", c.label), el("span", "k", c.hint)); if (i === psel) li.className = "sel"; li.addEventListener("pointermove", () => { if (psel !== i) { psel = i; mark(); } }); li.addEventListener("click", () => run(i)); return li; }));
+    if (!items.length) plist.append(el("li", "none", "nothing here. try: theme, rain, jot"));
+  }
+  const mark = () => { $$("li", plist).forEach((li, i) => li.classList.toggle("sel", i === psel)); const s = $("li.sel", plist); if (s) s.scrollIntoView({ block: "nearest" }); };
+  const run = i => { const c = items[i]; if (!c) return; pal.close(); setTimeout(c.run, 60); };
+  const openPalette = () => { pin.value = ""; psel = 0; render(); pal.showModal(); pin.focus(); };
+  pin.addEventListener("input", () => { psel = 0; render(); });
+  pin.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown" || (e.key === "n" && e.ctrlKey)) { psel = (psel + 1) % Math.max(1, items.length); mark(); }
+    else if (e.key === "ArrowUp" || (e.key === "p" && e.ctrlKey)) { psel = (psel - 1 + items.length) % Math.max(1, items.length); mark(); }
+    else if (e.key === "Enter") run(psel);
+    else return;
+    e.preventDefault();
+  });
+  pal.addEventListener("click", e => { if (e.target === pal) pal.close(); });
+
+  /* a small joke for anyone who types sudo */
+  let typed = "";
+  addEventListener("keypress", e => {
+    if (/^(input|textarea)$/i.test(e.target.tagName)) return;
+    typed = (typed + e.key).slice(-4);
+    if (typed === "sudo") toast("nice try. you are not in the sudoers file.");
+  });
+
   /* keyboard */
   const help = $("#help");
   if (help) help.addEventListener("click", e => { if (e.target === help) help.close(); });
   addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && !e.altKey) { e.preventDefault(); if (!d.querySelector("dialog[open]")) openPalette(); return; }
     if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
     if (/^(input|textarea|select)$/i.test(e.target.tagName) || e.target.isContentEditable) return;
     const k = e.key;
+    if (k === "/" && !d.querySelector("dialog[open]")) { e.preventDefault(); openPalette(); return; }
     if (k === "?" && help) { help.open ? help.close() : help.showModal(); return; }
     if (d.querySelector("dialog[open]")) return;
     if (k === "t") toggleTheme();
