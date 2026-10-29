@@ -137,40 +137,7 @@
   const title = d.title;
   d.addEventListener("visibilitychange", () => { d.title = d.hidden ? "still raining · " + title : title; });
 
-  /* todoterm is a toy: hover moves the selection, click or space checks a task */
-  const todo = $("#todoterm .tui");
-  if (todo) {
-    const rows = $$(".t", todo), cnt = $(".cnt", todo);
-    let cur = Math.max(0, rows.findIndex(r => r.classList.contains("sel")));
-    const select = i => {
-      cur = (i + rows.length) % rows.length;
-      rows.forEach((r, k) => { r.classList.toggle("sel", k === cur); $(".gut", r).textContent = k === cur ? " › " : "   "; });
-    };
-    const toggle = r => {
-      const done = r.classList.toggle("done");
-      $(".box", r).textContent = done ? "[x] " : "[ ] ";
-      cnt.textContent = rows.filter(x => x.classList.contains("done")).length;
-    };
-    rows.forEach((r, k) => {
-      r.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") select(k); });
-      r.addEventListener("click", () => { select(k); toggle(r); });
-    });
-    todo.removeAttribute("role");
-    todo.setAttribute("role", "group");
-    todo.tabIndex = 0;
-    todo.title = "try it: hover, click, or j / k / space";
-    todo.addEventListener("keydown", e => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const k = e.key;
-      if (k === "j" || k === "ArrowDown") select(cur + 1);
-      else if (k === "k" || k === "ArrowUp") select(cur - 1);
-      else if (k === " " || k === "x" || k === "Enter") toggle(rows[cur]);
-      else return;
-      e.preventDefault(); e.stopPropagation();
-    });
-    const cap = $("figcaption span", todo.parentElement);
-    cap.append(el("span", "try", " · try it"));
-  }
+  addEventListener("gw:toast", e => toast(e.detail));
 
   /* reveal on scroll */
   if (!reduce && "IntersectionObserver" in window) {
