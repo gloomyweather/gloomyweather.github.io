@@ -202,7 +202,7 @@
   if (hashTarget()) addEventListener("load", () => settle(() => flash(hashTarget())), { once: true });
   const go = pr => { pr.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); settle(() => flash(pr)); };
 
-  /* ascii rain: on by default, wind follows the mouse, drops splash */
+  /* ascii rain: always on at load (calmer for reduced motion), wind follows the mouse, drops splash */
   const cv = el("canvas", "rain");
   cv.setAttribute("aria-hidden", "true");
   d.body.append(cv);
@@ -222,7 +222,7 @@
   }
   addEventListener("pointermove", e => { windT = (e.clientX / innerWidth - 0.5) * 2; }, { passive: true });
   function frame(t) {
-    const dt = Math.min(48, t - last) / 16.67; last = t;
+    const dt = Math.min(48, t - last) / 16.67 * (reduce ? 0.35 : 1); last = t;
     wind += (windT - wind) * 0.04 * dt;
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = getComputedStyle(root).getPropertyValue("--ink").trim() || "#000";
@@ -246,7 +246,6 @@
   function setRain(on, save) {
     raining = on;
     clearTimeout(stopTimer);
-    if (save) store("rain", on ? "on" : "off");
     if (rainBtn) { rainBtn.textContent = on ? "rain ✓" : "rain"; rainBtn.setAttribute("aria-pressed", on); }
     if (on) { size(); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); cv.classList.add("on"); }
     else { cv.classList.remove("on"); stopTimer = setTimeout(() => cancelAnimationFrame(raf), 1000); }
@@ -261,9 +260,7 @@
   }
   const cur = $(".hero .cur") || $(".lost .cur");
   if (cur) { cur.classList.add("live"); cur.title = "rain?"; cur.addEventListener("click", toggleRain); }
-  let saved = null;
-  try { saved = localStorage.getItem("rain"); } catch (e) {}
-  setRain(saved ? saved === "on" : !reduce, false);
+  setRain(true, false);
 
   /* footer: the weather where you are (it is overcast) */
   const bottom = $(".bottom");
