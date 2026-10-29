@@ -173,6 +173,7 @@ code { transition: background-color .15s, color .15s; }
 .bottom { margin-top: 112px; padding-top: 14px; border-top: 1px solid var(--ink); color: var(--faint); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .bottom a { color: var(--ink); }
 .bottom .up { margin-right: 2ch; }
+.bottom .wx { margin-left: auto; margin-right: auto; }
 
 /* reveal on scroll (the classes are added by script.js, so no script means no hidden content) */
 .rv { transition: opacity .7s ease, transform .7s var(--out), background-size 1s var(--inout); }

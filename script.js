@@ -202,45 +202,77 @@
   if (hashTarget()) addEventListener("load", () => settle(() => flash(hashTarget())), { once: true });
   const go = pr => { pr.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); settle(() => flash(pr)); };
 
-  /* ascii rain, because of the name */
+  /* ascii rain: on by default, wind follows the mouse, drops splash */
   const cv = el("canvas", "rain");
   cv.setAttribute("aria-hidden", "true");
   d.body.append(cv);
   const ctx = cv.getContext("2d");
   const FS = 14, COL = FS * 1.2;
-  let drops = [], raining = false, raf = 0, last = 0, W = 0, H = 0, stopTimer;
-  const spawn = init => ({ x: Math.floor(Math.random() * (W / COL)) * COL, y: init ? Math.random() * H : -Math.random() * H * 0.4, v: 6 + Math.random() * 7, len: 3 + ((Math.random() * 6) | 0), c: Math.random() < 0.8 ? "|" : "¦" });
+  let drops = [], splashes = [], raining = false, raf = 0, last = 0, W = 0, H = 0, stopTimer, wind = 0, windT = 0, rainBtn = null;
+  const spawn = init => ({ x: Math.floor(Math.random() * (W / COL + 6)) * COL - 3 * COL, y: init ? Math.random() * H : -Math.random() * H * 0.4, v: 6 + Math.random() * 7, len: 3 + ((Math.random() * 6) | 0), hit: false });
   function size() {
     const dpr = Math.min(devicePixelRatio || 1, 2);
     W = innerWidth; H = innerHeight;
     cv.width = W * dpr; cv.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.font = `${FS}px "JetBrains Mono", monospace`;
-    const n = Math.round(W / COL * 0.4);
+    const n = Math.round(W / COL * 0.55);
     while (drops.length < n) drops.push(spawn(true));
     drops.length = n;
   }
+  addEventListener("pointermove", e => { windT = (e.clientX / innerWidth - 0.5) * 2; }, { passive: true });
   function frame(t) {
     const dt = Math.min(48, t - last) / 16.67; last = t;
+    wind += (windT - wind) * 0.04 * dt;
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = getComputedStyle(root).getPropertyValue("--ink").trim() || "#000";
+    const slant = wind * 0.5, ch = Math.abs(wind) > 0.45 ? (wind > 0 ? "\\" : "/") : "|";
     for (const dr of drops) {
-      for (let k = 0; k < dr.len; k++) { ctx.globalAlpha = 0.3 * (1 - k / dr.len); ctx.fillText(dr.c, dr.x, dr.y - k * FS); }
-      dr.y += dr.v * dt;
+      for (let k = 0; k < dr.len; k++) { ctx.globalAlpha = 0.34 * (1 - k / dr.len); ctx.fillText(ch, dr.x - k * FS * slant, dr.y - k * FS); }
+      dr.y += dr.v * dt; dr.x += dr.v * slant * dt;
+      if (!dr.hit && dr.y > H - 6) { dr.hit = true; splashes.push({ x: dr.x, age: 0 }); }
       if (dr.y - dr.len * FS > H) Object.assign(dr, spawn(false));
     }
+    for (let i = splashes.length - 1; i >= 0; i--) {
+      const sp = splashes[i]; sp.age += dt;
+      if (sp.age > 22) { splashes.splice(i, 1); continue; }
+      ctx.globalAlpha = 0.5 * (1 - sp.age / 22);
+      ctx.fillText(sp.age < 7 ? "." : sp.age < 14 ? "o" : "°", sp.x, H - 4);
+      if (sp.age > 5) { ctx.fillText("·", sp.x - 9 - sp.age * 0.5, H - 4); ctx.fillText("·", sp.x + 9 + sp.age * 0.5, H - 4); }
+    }
+    ctx.globalAlpha = 1;
     raf = requestAnimationFrame(frame);
   }
-  function toggleRain() {
-    raining = !raining;
+  function setRain(on, save) {
+    raining = on;
     clearTimeout(stopTimer);
-    if (slMode) slMode.textContent = raining ? "RAIN" : "NORMAL";
-    if (raining) { size(); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); cv.classList.add("on"); }
+    if (save) store("rain", on ? "on" : "off");
+    if (rainBtn) { rainBtn.textContent = on ? "rain ✓" : "rain"; rainBtn.setAttribute("aria-pressed", on); }
+    if (on) { size(); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); cv.classList.add("on"); }
     else { cv.classList.remove("on"); stopTimer = setTimeout(() => cancelAnimationFrame(raf), 1000); }
   }
+  const toggleRain = () => setRain(!raining, true);
   addEventListener("resize", () => { if (raining) size(); });
+  if (nav) {
+    rainBtn = el("button", "theme", "rain");
+    rainBtn.type = "button";
+    rainBtn.addEventListener("click", toggleRain);
+    nav.insertBefore(rainBtn, themeBtn);
+  }
   const cur = $(".hero .cur") || $(".lost .cur");
   if (cur) { cur.classList.add("live"); cur.title = "rain?"; cur.addEventListener("click", toggleRain); }
+  let saved = null;
+  try { saved = localStorage.getItem("rain"); } catch (e) {}
+  setRain(saved ? saved === "on" : !reduce, false);
+
+  /* footer: the weather where you are (it is overcast) */
+  const bottom = $(".bottom");
+  if (bottom) {
+    const w = el("span", "wx");
+    const tick = () => { const n = new Date(); w.textContent = `${String(n.getHours()).padStart(2, "0")}:${String(n.getMinutes()).padStart(2, "0")} · overcast`; };
+    tick(); setInterval(tick, 15000);
+    bottom.firstElementChild.after(w);
+  }
 
   /* keyboard */
   const help = $("#help");
