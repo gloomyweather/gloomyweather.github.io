@@ -53,7 +53,7 @@
   <p class="more">each one does one thing and stays out of the way. all of them run on linux
   and plug into <a href="https://omarchy.org">omarchy</a>: a hotkey, the launcher, the bar,
   the current theme.</p>
-  <p class="stats"><span><b data-n="5">5</b> projects</span><span><b data-n="30">30</b> wallpapers</span><span><b data-n="1">1</b> font</span><span><b data-n="0">0</b> trackers</span></p>
+  <p class="stats"><span><b data-n="6">6</b> projects</span><span><b data-n="30">30</b> wallpapers</span><span><b data-n="1">1</b> font</span><span><b data-n="0">0</b> trackers</span></p>
 </section>
 
 <nav class="index" aria-label="projects">
@@ -77,13 +77,33 @@
     <p class="tagline">hands and eyes for ai agents on omarchy.</p>
     <figure class="win">
       <figcaption><span>claude code</span><span>super + ctrl + alt + p to pause</span></figcaption>
-      <img class="shot" src="computer-use.webp?v=1" width="1470" height="620" loading="lazy" decoding="async" alt="claude filling a libreoffice sheet on omarchy: the cli finds text with ocr, reads the accessibility tree and clicks a cell, while an orange frame and a 'claude is using your computer' pill sit around the screen">
+      <pre class="tui" style="--lines:21" role="img" aria-label="a terminal session: omarchy-cu finds text on screen with ocr, clicks it, refuses to type into the agent's own terminal, reads the omarchy theme and pauses agent input">  ⌖ <span class="b">omarchy-cu</span><span class="m">  ·  mcp + cli</span>                       <span class="b">● claude is using your computer</span>
+  <span class="m">────────────────────────────────────────────────────────────────────────────────</span>
+ 
+  <span class="m">$ </span><span class="b">omarchy-cu find "small, quiet tools"</span>
+  453  283  small, quiet tools
+ 
+  <span class="m">$ </span><span class="b">omarchy-cu click-text "omarchy-gdrive"</span>
+  clicked 'omarchy-gdrive' at 469 444
+ 
+  <span class="m">$ </span><span class="b">omarchy-cu key j</span>
+  <span class="m">error: the focused window [foot] is the agent's own terminal; keyboard</span>
+  <span class="m">input there would hit the agent itself. focus the target window first.</span>
+ 
+  <span class="m">$ </span><span class="b">omarchy-cu omarchy theme current</span>
+  Mono
+ 
+  <span class="m">$ </span><span class="b">omarchy-cu pause</span>
+  paused
+ 
+  <span class="m">────────────────────────────────────────────────────────────────────────────────</span>
+  <span class="b">find</span><span class="m"> text  </span><span class="b">click</span><span class="m">  </span><span class="b">type</span><span class="m">  </span><span class="b">key</span><span class="m">  </span><span class="b">ui</span><span class="m"> tree  </span><span class="b">launch</span><span class="m">  </span><span class="b">window</span><span class="m">  </span><span class="b">omarchy</span><span class="m">  </span><span class="b">ask</span><span class="m">  </span><span class="b">pause</span></pre>
     </figure>
     <ul>
       <li>lets claude code, codex or any mcp agent use your desktop: screenshots, mouse, keyboard, on-screen text, windows, workspaces, apps.</li>
       <li>clicks things by name: ocr in english and russian, and the accessibility tree of gtk, qt and chromium apps.</li>
       <li>knows omarchy: ~400 system commands, the launcher's apps, native popups to ask you before guessing.</li>
-      <li>an orange frame while the agent acts, and <code>super + ctrl + alt + p</code> stops it. no root, no ydotool.</li>
+      <li>a frame in your theme color while the agent acts, and <code>super + ctrl + alt + p</code> stops it. no root, no ydotool.</li>
     </ul>
     <pre class="cmd">git clone https://github.com/gloomyweather/omarchy-computer-use \
   ~/.local/share/omarchy-computer-use
