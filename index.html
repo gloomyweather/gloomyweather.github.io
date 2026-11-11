@@ -58,21 +58,41 @@
 
 <nav class="index" aria-label="projects">
   <ol>
-    <li><a href="#omarchy-gdrive"><span class="n">01</span><span class="name">omarchy-gdrive</span><span class="tag">google drive as a normal folder on omarchy.</span></a></li>
-    <li><a href="#todoterm"><span class="n">02</span><span class="name">todoterm</span><span class="tag">a minimalist task manager for the terminal.</span></a></li>
-    <li><a href="#jot"><span class="n">03</span><span class="name">jot</span><span class="tag">quick notes for the terminal.</span></a></li>
-    <li><a href="#ember"><span class="n">04</span><span class="name">ember</span><span class="tag">a black-and-white omarchy theme with one orange accent.</span></a></li>
-    <li><a href="#mono"><span class="n">05</span><span class="name">mono</span><span class="tag">a grayscale omarchy theme with real colors in the terminal.</span></a></li>
+    <li><a href="#computer-use"><span class="n">01</span><span class="name">computer-use</span><span class="tag">hands and eyes for ai agents on omarchy.</span></a></li>
+    <li><a href="#omarchy-gdrive"><span class="n">02</span><span class="name">omarchy-gdrive</span><span class="tag">google drive as a normal folder on omarchy.</span></a></li>
+    <li><a href="#todoterm"><span class="n">03</span><span class="name">todoterm</span><span class="tag">a minimalist task manager for the terminal.</span></a></li>
+    <li><a href="#jot"><span class="n">04</span><span class="name">jot</span><span class="tag">quick notes for the terminal.</span></a></li>
+    <li><a href="#ember"><span class="n">05</span><span class="name">ember</span><span class="tag">a black-and-white omarchy theme with one orange accent.</span></a></li>
+    <li><a href="#mono"><span class="n">06</span><span class="name">mono</span><span class="tag">a grayscale omarchy theme with real colors in the terminal.</span></a></li>
   </ol>
 </nav>
 
-<div class="ticker" aria-hidden="true"><div><span>linux · omarchy · rust · shell · hotkeys · themes · terminal · mit · gpl-3.0 · quiet by default · </span><span>linux · omarchy · rust · shell · hotkeys · themes · terminal · mit · gpl-3.0 · quiet by default · </span></div></div>
+<div class="ticker" aria-hidden="true"><div><span>linux · omarchy · rust · shell · python · ai agents · hotkeys · themes · terminal · mit · gpl-3.0 · quiet by default · </span><span>linux · omarchy · rust · shell · python · ai agents · hotkeys · themes · terminal · mit · gpl-3.0 · quiet by default · </span></div></div>
 
 <section class="group" id="omarchy" aria-labelledby="omarchy-h">
   <header><h2 id="omarchy-h">omarchy</h2><p>plugins, apps and themes for omarchy.</p></header>
 
+  <article class="project" id="computer-use">
+    <h3><span class="n">01</span>computer-use<span class="mark rot" aria-hidden="true">⌖</span></h3>
+    <p class="tagline">hands and eyes for ai agents on omarchy.</p>
+    <figure class="win">
+      <figcaption><span>claude code</span><span>super + ctrl + alt + p to pause</span></figcaption>
+      <img class="shot" src="computer-use.webp?v=1" width="1470" height="620" loading="lazy" decoding="async" alt="claude filling a libreoffice sheet on omarchy: the cli finds text with ocr, reads the accessibility tree and clicks a cell, while an orange frame and a 'claude is using your computer' pill sit around the screen">
+    </figure>
+    <ul>
+      <li>lets claude code, codex or any mcp agent use your desktop: screenshots, mouse, keyboard, on-screen text, windows, workspaces, apps.</li>
+      <li>clicks things by name: ocr in english and russian, and the accessibility tree of gtk, qt and chromium apps.</li>
+      <li>knows omarchy: ~400 system commands, the launcher's apps, native popups to ask you before guessing.</li>
+      <li>an orange frame while the agent acts, and <code>super + ctrl + alt + p</code> stops it. no root, no ydotool.</li>
+    </ul>
+    <pre class="cmd">git clone https://github.com/gloomyweather/omarchy-computer-use \
+  ~/.local/share/omarchy-computer-use
+~/.local/share/omarchy-computer-use/install.sh --keybind</pre>
+    <p class="meta"><span>python · mit · 0.2.0</span><span><a href="https://github.com/gloomyweather/omarchy-computer-use">source</a></span></p>
+  </article>
+
   <article class="project" id="omarchy-gdrive">
-    <h3><span class="n">01</span>omarchy-gdrive</h3>
+    <h3><span class="n">02</span>omarchy-gdrive</h3>
     <p class="tagline">google drive as a normal folder on omarchy.</p>
     <ul>
       <li>open, edit and save drive files from files, the terminal or any app. built on <a href="https://rclone.org/">rclone</a>.</li>
@@ -87,7 +107,7 @@
   </article>
 
   <article class="project" id="todoterm">
-    <h3><span class="n">02</span>todoterm<span class="mark bob" aria-hidden="true">૮ ˶ᵔ ᵕ ᵔ˶ ა</span></h3>
+    <h3><span class="n">03</span>todoterm<span class="mark bob" aria-hidden="true">૮ ˶ᵔ ᵕ ᵔ˶ ა</span></h3>
     <p class="tagline">a minimalist task manager for the terminal.</p>
     <figure class="win">
       <figcaption><span>todoterm</span><span>super + alt + t</span></figcaption>
@@ -106,7 +126,7 @@ contrib/omarchy/install.sh</pre>
   </article>
 
   <article class="project" id="jot">
-    <h3><span class="n">03</span>jot<span class="mark rot" aria-hidden="true">◆</span></h3>
+    <h3><span class="n">04</span>jot<span class="mark rot" aria-hidden="true">◆</span></h3>
     <p class="tagline">quick notes for the terminal.</p>
     <figure class="win">
       <figcaption><span>jot</span><span>super + alt + n</span></figcaption>
@@ -145,7 +165,7 @@ contrib/omarchy/install.sh</pre>
   </article>
 
   <article class="project" id="ember">
-    <h3><span class="n">04</span>ember<span class="mark rot" aria-hidden="true">◐</span></h3>
+    <h3><span class="n">05</span>ember<span class="mark rot" aria-hidden="true">◐</span></h3>
     <p class="tagline">a black-and-white omarchy theme with one orange accent.</p>
     <figure class="win">
       <figcaption><span>ember · ember-light</span><span>4 of 24 wallpapers</span></figcaption>
@@ -163,7 +183,7 @@ omarchy theme set ember</pre>
     <p class="meta"><span>theme · mit</span><span><a href="https://github.com/gloomyweather/omarchy-ember-theme">dark</a><a href="https://github.com/gloomyweather/omarchy-ember-light-theme">light</a></span></p>
   </article>
   <article class="project" id="mono">
-    <h3><span class="n">05</span>mono<span class="mark pulse" aria-hidden="true">▒</span></h3>
+    <h3><span class="n">06</span>mono<span class="mark pulse" aria-hidden="true">▒</span></h3>
     <p class="tagline">a grayscale omarchy theme with real colors in the terminal.</p>
     <figure class="win">
       <figcaption><span>mono</span><span>neovim and foot on the contours wallpaper</span></figcaption>
@@ -192,7 +212,7 @@ omarchy theme set mono</pre>
     <h2 id="help-h">keys</h2>
     <dl>
       <dt><kbd>j</kbd><kbd>k</kbd></dt><dd>next / previous project</dd>
-      <dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd>jump to a project</dd>
+      <dt><kbd>1</kbd>–<kbd>6</kbd></dt><dd>jump to a project</dd>
       <dt><kbd>g</kbd><kbd>G</kbd></dt><dd>top / bottom</dd>
       <dt><kbd>t</kbd></dt><dd>light / dark</dd>
       <dt><kbd>r</kbd></dt><dd>rain</dd>
