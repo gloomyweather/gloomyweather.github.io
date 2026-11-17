@@ -3,58 +3,58 @@
    rare: true — слой «на любителя»: при рандоме чаще всего остаётся на 0. */
 window.AMBIENT_SCHEMA = {
   groups: [
-    { id: 'tone',  label: 'тон' },
-    { id: 'pad',   label: 'пэд' },
-    { id: 'notes', label: 'ноты' },
-    { id: 'noise', label: 'шум' },
-    { id: 'space', label: 'пространство' },
-    { id: 'char',  label: 'характер' }
+    { id: 'tone',  label: 'tone' },
+    { id: 'pad',   label: 'pad' },
+    { id: 'notes', label: 'notes' },
+    { id: 'noise', label: 'noise' },
+    { id: 'space', label: 'space' },
+    { id: 'char',  label: 'character' }
   ],
   params: [
     // тон: общая гармония для пэда, нот и баса
-    { id: 'root',  group: 'tone', type: 'select', label: 'тоника', def: 2,
+    { id: 'root',  group: 'tone', type: 'select', label: 'root note', def: 2,
       options: ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'] },
-    { id: 'scale', group: 'tone', type: 'select', label: 'лад', def: 0,
-      options: ['мажорная пентатоника', 'минорная пентатоника', 'лидийский', 'дорийский', 'эолийский', 'фригийский'] },
-    { id: 'drift', group: 'tone', type: 'slider', label: 'дрейф', def: 0.4,
-      hint: 'как часто сменяются аккорды и плывут тембры: 0 — статично, 1 — постоянно меняется' },
+    { id: 'scale', group: 'tone', type: 'select', label: 'scale', def: 0,
+      options: ['major pentatonic', 'minor pentatonic', 'lydian', 'dorian', 'aeolian', 'phrygian'] },
+    { id: 'drift', group: 'tone', type: 'slider', label: 'drift', def: 0.4,
+      hint: 'how often chords change and timbres drift: 0 — static, 1 — always shifting' },
 
     // пэд: тянущийся аккорд из нескольких расстроенных голосов
-    { id: 'padLevel',   group: 'pad', type: 'slider', label: 'громкость', def: 0.6 },
-    { id: 'padTone',    group: 'pad', type: 'slider', label: 'тембр',     def: 0.4, hint: 'морфинг волны: 0 — чистый, почти синус/флейта; 0.5 — тёплые струнные; 1 — плотный, органно-стеклянный с верхними гармониками' },
-    { id: 'padBright',  group: 'pad', type: 'slider', label: 'яркость',   def: 0.4, hint: 'срез фильтра: 0 — глухо, 1 — открыто' },
-    { id: 'padMotion',  group: 'pad', type: 'slider', label: 'движение',  def: 0.4, hint: 'глубина медленной модуляции фильтра и громкости голосов' },
-    { id: 'padWidth',   group: 'pad', type: 'slider', label: 'ширина',    def: 0.5, hint: 'расстройка голосов и стерео' },
-    { id: 'padShimmer', group: 'pad', type: 'slider', label: 'мерцание',  def: 0.15, hint: 'воздушный слой октавой-двумя выше аккорда, медленно вспыхивает и гаснет' },
-    { id: 'subLevel',   group: 'pad', type: 'slider', label: 'бас',       def: 0.3, hint: 'синусоидальный суб на тонике' },
+    { id: 'padLevel',   group: 'pad', type: 'slider', label: 'volume', def: 0.6 },
+    { id: 'padTone',    group: 'pad', type: 'slider', label: 'tone',      def: 0.4, hint: 'wave morph: 0 — pure, almost a sine/flute; 0.5 — warm strings; 1 — dense, organ-and-glass with upper harmonics' },
+    { id: 'padBright',  group: 'pad', type: 'slider', label: 'brightness', def: 0.4, hint: 'filter cutoff: 0 — muffled, 1 — open' },
+    { id: 'padMotion',  group: 'pad', type: 'slider', label: 'motion',    def: 0.4, hint: 'depth of the slow modulation of the filter and voice volumes' },
+    { id: 'padWidth',   group: 'pad', type: 'slider', label: 'width',     def: 0.5, hint: 'voice detune and stereo spread' },
+    { id: 'padShimmer', group: 'pad', type: 'slider', label: 'shimmer',   def: 0.15, hint: 'an airy layer one or two octaves above the chord, slowly flaring and fading' },
+    { id: 'subLevel',   group: 'pad', type: 'slider', label: 'bass',      def: 0.3, hint: 'a sine sub on the root note' },
 
     // ноты: редкие генеративные ноты в ладу
-    { id: 'notesLevel',   group: 'notes', type: 'slider', label: 'громкость', def: 0.35 },
-    { id: 'notesTone',    group: 'notes', type: 'slider', label: 'тембр',     def: 0.5, hint: 'морфинг инструмента: 0 — мягкий деревянный щипок/маримба; 0.35 — электропиано; 0.6 — колокольчик; 1 — стекло и металл' },
-    { id: 'notesDensity', group: 'notes', type: 'slider', label: 'плотность', def: 0.3, hint: '0 — одна нота раз в ~20 с, 1 — несколько в секунду' },
-    { id: 'notesDecay',   group: 'notes', type: 'slider', label: 'длина',     def: 0.5, hint: 'затухание: 0 — короткий щипок, 1 — долгий звон' },
-    { id: 'notesHeight',  group: 'notes', type: 'slider', label: 'высота',    def: 0.5, hint: 'регистр: 0 — низко, 1 — высоко' },
-    { id: 'notesPhrase',  group: 'notes', type: 'slider', label: 'фразы',     def: 0.2, hint: '0 — отдельные случайные ноты; 1 — ноты собираются в короткие мелодические фразы и арпеджио с паузами между ними' },
+    { id: 'notesLevel',   group: 'notes', type: 'slider', label: 'volume', def: 0.35 },
+    { id: 'notesTone',    group: 'notes', type: 'slider', label: 'tone',      def: 0.5, hint: 'instrument morph: 0 — soft wooden pluck/marimba; 0.35 — electric piano; 0.6 — bell; 1 — glass and metal' },
+    { id: 'notesDensity', group: 'notes', type: 'slider', label: 'density',   def: 0.3, hint: '0 — one note every ~20 s, 1 — several per second' },
+    { id: 'notesDecay',   group: 'notes', type: 'slider', label: 'length',    def: 0.5, hint: 'decay: 0 — short pluck, 1 — long ring' },
+    { id: 'notesHeight',  group: 'notes', type: 'slider', label: 'height',    def: 0.5, hint: 'register: 0 — low, 1 — high' },
+    { id: 'notesPhrase',  group: 'notes', type: 'slider', label: 'phrases',   def: 0.2, hint: '0 — separate random notes; 1 — notes gather into short melodic phrases and arpeggios with pauses between them' },
 
     // шум: природные текстуры
-    { id: 'noiseLevel', group: 'noise', type: 'slider', label: 'громкость', def: 0.25 },
-    { id: 'noiseColor', group: 'noise', type: 'slider', label: 'окраска',   def: 0.4, hint: '0 — низкий гул, 0.5 — ветер, 1 — светлое шипение' },
-    { id: 'noiseWaves', group: 'noise', type: 'slider', label: 'волны',     def: 0.3, hint: '0 — ровный шум, 1 — медленные накаты как прибой' },
-    { id: 'noiseGrain', group: 'noise', type: 'slider', label: 'зерно',     def: 0.0, hint: 'редкое мягкое потрескивание поверх шума: винил, костёр вдалеке' },
-    { id: 'rainLevel',  group: 'noise', type: 'slider', label: 'дождь',     def: 0.0, rare: true, hint: 'отдельный слой капель' },
+    { id: 'noiseLevel', group: 'noise', type: 'slider', label: 'volume', def: 0.25 },
+    { id: 'noiseColor', group: 'noise', type: 'slider', label: 'color',     def: 0.4, hint: '0 — low rumble, 0.5 — wind, 1 — bright hiss' },
+    { id: 'noiseWaves', group: 'noise', type: 'slider', label: 'waves',     def: 0.3, hint: '0 — even noise, 1 — slow swells like surf' },
+    { id: 'noiseGrain', group: 'noise', type: 'slider', label: 'grain',     def: 0.0, hint: 'rare soft crackle over the noise: vinyl, a distant campfire' },
+    { id: 'rainLevel',  group: 'noise', type: 'slider', label: 'rain',      def: 0.0, rare: true, hint: 'a separate layer of drops' },
 
     // пространство
-    { id: 'reverb',     group: 'space', type: 'slider', label: 'реверб', def: 0.6, hint: 'доля обработанного сигнала' },
-    { id: 'reverbSize', group: 'space', type: 'slider', label: 'размер', def: 0.6, hint: 'длина хвоста: 0 — комната ~1.5 с, 1 — собор ~12 с' },
-    { id: 'delay',      group: 'space', type: 'slider', label: 'эхо',    def: 0.25, hint: 'стерео-дилей с обратной связью, в основном для нот' },
+    { id: 'reverb',     group: 'space', type: 'slider', label: 'reverb', def: 0.6, hint: 'share of the processed signal' },
+    { id: 'reverbSize', group: 'space', type: 'slider', label: 'size',   def: 0.6, hint: 'tail length: 0 — room ~1.5 s, 1 — cathedral ~12 s' },
+    { id: 'delay',      group: 'space', type: 'slider', label: 'echo',    def: 0.25, hint: 'stereo delay with feedback, mostly for the notes' },
 
     // характер: обработка всего микса и слой для наушников
-    { id: 'tape',     group: 'char', type: 'slider', label: 'плёнка',  def: 0.15, hint: 'плавание высоты как у старой кассеты (медленный wow + лёгкий flutter)' },
-    { id: 'warmth',   group: 'char', type: 'slider', label: 'тепло',   def: 0.2,  hint: 'мягкое ламповое насыщение и скруглённый верх' },
-    { id: 'binaural', group: 'char', type: 'slider', label: 'биения',  def: 0.0, rare: true, hint: 'бинауральные биения, слышны только в наушниках: два тихих тона с небольшой разницей частот в левом и правом ухе' },
-    { id: 'beatRate', group: 'char', type: 'slider', label: 'частота биений', def: 0.3, hint: '0 — 1 гц (глубокий сон), 0.3 — ~4 гц (дремота, медитация), 0.6 — ~9 гц (спокойное внимание), 1 — 16 гц (фокус)' },
+    { id: 'tape',     group: 'char', type: 'slider', label: 'tape',    def: 0.15, hint: 'pitch wobble like an old cassette (slow wow + light flutter)' },
+    { id: 'warmth',   group: 'char', type: 'slider', label: 'warmth',  def: 0.2,  hint: 'soft tube saturation and a rounded top end' },
+    { id: 'binaural', group: 'char', type: 'slider', label: 'beats',   def: 0.0, rare: true, hint: 'binaural beats, audible only on headphones: two quiet tones with a slight frequency difference in the left and right ear' },
+    { id: 'beatRate', group: 'char', type: 'slider', label: 'beat rate', def: 0.3, hint: '0 — 1 hz (deep sleep), 0.3 — ~4 hz (drowsiness, meditation), 0.6 — ~9 hz (calm attention), 1 — 16 hz (focus)' },
 
     // вне групп, показывается в шапке
-    { id: 'volume', group: null, type: 'slider', label: 'громкость', def: 0.7 }
+    { id: 'volume', group: null, type: 'slider', label: 'volume', def: 0.7 }
   ]
 };

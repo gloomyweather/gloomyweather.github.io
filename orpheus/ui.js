@@ -6,7 +6,7 @@
   if (!SCHEMA) return;
   var STORE_KEY = 'ambient.v1'; // старые сохранения (values + active) читаются как есть, новые поля необязательны
   var PRESETS = Array.isArray(window.AMBIENT_PRESETS) ? window.AMBIENT_PRESETS : [];
-  var TRANS_OPTS = [{ s: 3, t: '3 с' }, { s: 15, t: '15 с' }, { s: 60, t: '1 мин' }, { s: 120, t: '2 мин' }];
+  var TRANS_OPTS = [{ s: 3, t: '3 s' }, { s: 15, t: '15 s' }, { s: 60, t: '1 min' }, { s: 120, t: '2 min' }];
   var HIST_MAX = 30, NAME_MAX = 24;
 
   function A() { return window.Ambient || null; }
@@ -98,7 +98,7 @@
   function descOf(pr) { return pr.desc ? String(pr.desc) : (PRESETS.indexOf(pr) < 0 ? pr.name : ''); }
   function descWanted() {
     var id = hoverId || activePreset, pr = id ? findPreset(id) : null;
-    return pr ? descOf(pr) : 'свой звук';
+    return pr ? descOf(pr) : 'custom sound';
   }
   function renderDesc() {
     var t = descWanted();
@@ -135,7 +135,7 @@
     var t = b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2;
     try { row.scrollTo({ left: Math.max(0, t), behavior: booted && !reduceMotion.matches ? 'smooth' : 'auto' }); } catch (e) { row.scrollLeft = Math.max(0, t); }
   }
-  function presetName() { var pr = activePreset ? findPreset(activePreset) : null; return pr ? pr.name : 'свой звук'; }
+  function presetName() { var pr = activePreset ? findPreset(activePreset) : null; return pr ? pr.name : 'custom sound'; }
   function renderNames() {
     var n = presetName();
     $('hdrPreset').textContent = n; $('miniName').textContent = n;
@@ -340,7 +340,7 @@
     if (!o.compact) {
       out = el('output', { 'for': iid });
       var label = el('label', { 'for': iid, text: p.label });
-      if (p.id === 'binaural') label.appendChild(el('span', { 'class': 'tag', text: 'наушники · эксп.' }));
+      if (p.id === 'binaural') label.appendChild(el('span', { 'class': 'tag', text: 'headphones · exp.' }));
       row = el('div', { 'class': 'slider' }, [el('div', { 'class': 'shead' }, [label, out]), b.rng]);
     }
     if (p.hint) { row.title = p.hint; input.setAttribute('aria-description', p.hint); }
@@ -464,10 +464,10 @@
   SCHEMA.groups.forEach(function (g) {
     var gp = params.filter(function (p) { return p.group === g.id; });
     if (!gp.length) return;
-    var dice = el('button', { type: 'button', 'class': 'dice', id: 'dice-' + g.id, 'aria-label': 'случайно: ' + g.label, title: 'случайно: ' + g.label });
+    var dice = el('button', { type: 'button', 'class': 'dice', id: 'dice-' + g.id, 'aria-label': 'randomize: ' + g.label, title: 'randomize: ' + g.label });
     dice.innerHTML = DICE;
     dice.addEventListener('click', function () { randomize(g.id); });
-    var lock = el('button', { type: 'button', 'class': 'lock', id: 'lock-' + g.id, 'aria-pressed': 'false', 'aria-label': 'не менять автоматически: ' + g.label, title: 'не менять автоматически' });
+    var lock = el('button', { type: 'button', 'class': 'lock', id: 'lock-' + g.id, 'aria-pressed': 'false', 'aria-label': 'keep unchanged by auto: ' + g.label, title: 'keep unchanged by auto' });
     lock.innerHTML = LOCK;
     lock.addEventListener('click', function () { setLocked(g.id, !locked[g.id]); saveNow(); });
     var ctr = el('div', { 'class': 'controls' });
@@ -490,10 +490,10 @@
   // пресеты по назначению: четыре ряда + «мои»
   var presetsEl = $('presets');
   var ROWS = [
-    { label: 'работа', ids: ['focus', 'morning', 'calm', 'warmth', 'fog'] },
-    { label: 'сон и отдых', ids: ['sleep', 'meditation', 'deep', 'midnight', 'temple'] },
-    { label: 'природа', ids: ['rain', 'forest', 'storm', 'winter'] },
-    { label: 'настроение', ids: ['space', 'weightless', 'nostalgia', 'sunset'] }
+    { label: 'work', ids: ['focus', 'morning', 'calm', 'warmth', 'fog'] },
+    { label: 'sleep & rest', ids: ['sleep', 'meditation', 'deep', 'midnight', 'temple'] },
+    { label: 'nature', ids: ['rain', 'forest', 'storm', 'winter'] },
+    { label: 'mood', ids: ['space', 'weightless', 'nostalgia', 'sunset'] }
   ];
   var GLYPHS = {
     focus: '·', morning: '○', calm: '~', warmth: '◦', fog: '░',
@@ -540,21 +540,21 @@
     wireChip(b, pr.id);
     return b;
   }
-  var mine = makeRow('мои');
+  var mine = makeRow('mine');
   presetsEl.appendChild(mine.row);
   var delTimer = 0;
   function renderCustom() {
     mine.chips.innerHTML = '';
     custom.forEach(function (pr) {
       var b = presetChip(pr, '◇', 'cpreset-');
-      var x = el('button', { type: 'button', 'class': 'cdel', id: 'cdel-' + pr.id, 'aria-label': 'удалить: ' + pr.name });
+      var x = el('button', { type: 'button', 'class': 'cdel', id: 'cdel-' + pr.id, 'aria-label': 'delete: ' + pr.name });
       var ask = false;
-      function idle() { ask = false; x.classList.remove('ask'); x.textContent = ''; x.innerHTML = '<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7"/></svg>'; x.setAttribute('aria-label', 'удалить: ' + pr.name); }
+      function idle() { ask = false; x.classList.remove('ask'); x.textContent = ''; x.innerHTML = '<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7"/></svg>'; x.setAttribute('aria-label', 'delete: ' + pr.name); }
       idle();
       x.addEventListener('click', function () {
         if (!ask) {
-          ask = true; x.classList.add('ask'); x.innerHTML = ''; x.textContent = 'удалить?';
-          x.setAttribute('aria-label', 'подтвердить удаление: ' + pr.name);
+          ask = true; x.classList.add('ask'); x.innerHTML = ''; x.textContent = 'delete?';
+          x.setAttribute('aria-label', 'confirm delete: ' + pr.name);
           clearTimeout(delTimer); delTimer = setTimeout(idle, 3500);
           return;
         }
@@ -678,7 +678,7 @@
       var ms = navigator.mediaSession;
       if (!ms) return;
       var pr = activePreset ? findPreset(activePreset) : null;
-      if (window.MediaMetadata) ms.metadata = new MediaMetadata({ title: pr ? pr.name : 'свой звук', artist: 'orpheus' });
+      if (window.MediaMetadata) ms.metadata = new MediaMetadata({ title: pr ? pr.name : 'custom sound', artist: 'orpheus' });
       ms.playbackState = isRunning() ? 'playing' : 'paused';
     } catch (e) {}
   }
@@ -700,11 +700,11 @@
     var on = isRunning();
     playBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
     playIcon.setAttribute('d', on ? PAUSE_D : PLAY_D);
-    playLabel.textContent = on ? 'пауза' : 'играть';
+    playLabel.textContent = on ? 'pause' : 'play';
     miniPlay.setAttribute('aria-pressed', on ? 'true' : 'false');
-    miniPlay.setAttribute('aria-label', on ? 'пауза' : 'играть');
+    miniPlay.setAttribute('aria-label', on ? 'pause' : 'play');
     miniIcon.setAttribute('d', on ? PAUSE_D : PLAY_D);
-    statusEl.textContent = on ? 'играет' : 'тихо';
+    statusEl.textContent = on ? 'playing' : 'quiet';
     statusEl.classList.toggle('on', on);
     $('app').classList.toggle('playing', on);
     if (booted && on !== lastPlaying) emit('orpheus:transport', { playing: on });
@@ -847,13 +847,13 @@
   var moons = Array.prototype.slice.call(document.querySelectorAll('.moon'));
   moons.forEach(function (m) { m.addEventListener('click', function (e) { sleepPop.toggle(m, e); }); });
   var timerBtns = TIMER_OPTS.map(function (m) {
-    var b = el('button', { type: 'button', id: 'sleep-' + m, role: 'radio', 'aria-checked': 'false', 'aria-label': m ? m + ' минут' : 'выключить таймер', text: m ? String(m) : 'выкл' });
+    var b = el('button', { type: 'button', id: 'sleep-' + m, role: 'radio', 'aria-checked': 'false', 'aria-label': m ? m + ' minutes' : 'turn timer off', text: m ? String(m) : 'off' });
     b.addEventListener('click', function () { setTimerMin(m); });
     sleepSeg.appendChild(b);
     return b;
   });
   arrowNav(sleepSeg);
-  $('sleepTitle').textContent = 'таймер сна, мин';
+  $('sleepTitle').textContent = 'sleep timer, min';
   function renderTimerBtns() {
     timerBtns.forEach(function (b, i) { b.setAttribute('aria-checked', TIMER_OPTS[i] === timerMin ? 'true' : 'false'); });
   }
@@ -868,7 +868,7 @@
         mb.textContent = String(Math.max(1, Math.ceil(left / 60000)));
         rp.style.strokeDashoffset = (RING * (1 - clamp01(left / (timerMin * 60000)))).toFixed(1);
       } else rp.style.strokeDashoffset = '0';
-      m.setAttribute('aria-label', on ? 'таймер сна: ' + sleepLeft.textContent : 'таймер сна');
+      m.setAttribute('aria-label', on ? 'sleep timer: ' + sleepLeft.textContent : 'sleep timer');
     });
   }
   function fmt(ms) {
@@ -904,10 +904,10 @@
   function tickTimer() {
     var left = timerEnd - Date.now(), a = A();
     var canFade = !!(a && typeof a.fadeOut === 'function');
-    if (fadeActive) { sleepLeft.textContent = 'затихает ' + fmt(left); renderMoons(left); return; }
+    if (fadeActive) { sleepLeft.textContent = 'fading out ' + fmt(left); renderMoons(left); return; }
     if (canFade && a.running && left > 0 && left <= fadeLen * 60000) {
       startFade(a, Math.max(1, left / 1000));
-      sleepLeft.textContent = 'затихает ' + fmt(left);
+      sleepLeft.textContent = 'fading out ' + fmt(left);
       renderMoons(left);
       return;
     }
@@ -920,7 +920,7 @@
       }
       return;
     }
-    sleepLeft.textContent = 'осталось ' + fmt(left);
+    sleepLeft.textContent = fmt(left) + ' left';
     renderMoons(left);
   }
   // keep: не отменять затухание (пауза/конец — движок остановится сам)
@@ -942,13 +942,13 @@
 
   // ---------- макро ----------
   var MACROS = [
-    { id: 'bright', label: 'яркость', hint: 'светлее или глуше: тембр и фильтр пэда, тембр и высота нот, тепло в обратную сторону',
+    { id: 'bright', label: 'brightness', hint: 'brighter or duller: pad tone and filter, note tone and height, warmth in reverse',
       w: { padBright: 1, padTone: 0.5, notesTone: 0.5, notesHeight: 0.5, warmth: -0.6 } },
-    { id: 'motion', label: 'движение', hint: 'насколько звук живёт: модуляция пэда, плотность нот и фраз, дрейф, волны',
+    { id: 'motion', label: 'motion', hint: 'how alive the sound is: pad modulation, note and phrase density, drift, waves',
       w: { padMotion: 1, notesDensity: 1, drift: 0.6, notesPhrase: 0.6, noiseWaves: 0.4 } },
-    { id: 'room', label: 'простор', hint: 'размер пространства: реверб, длина хвоста, эхо и ширина пэда',
+    { id: 'room', label: 'space', hint: 'size of the room: reverb, tail length, echo and pad width',
       w: { reverb: 1, reverbSize: 1, delay: 0.7, padWidth: 0.8 } },
-    { id: 'nature', label: 'природа', hint: 'шум, волны, дождь и зерно — только те слои, что уже включены',
+    { id: 'nature', label: 'nature', hint: 'noise, waves, rain and grain — only the layers that are already on',
       w: { noiseLevel: 1, noiseWaves: 0.5, rainLevel: 0.8, noiseGrain: 0.3 }, cond: { rainLevel: 1, noiseGrain: 1 } }
   ];
   function macroValue(m) {

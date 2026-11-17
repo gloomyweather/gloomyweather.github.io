@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>orpheus</title>
-<meta name="description" content="бесконечный генеративный эмбиент в браузере: пресеты по настроению, живая настройка, ascii-лира.">
+<meta name="description" content="endless generative ambient in the browser: mood presets, live tuning, an ascii lyre.">
 <meta property="og:title" content="orpheus">
 <meta property="og:description" content="endless generative ambient in the browser.">
 <meta property="og:url" content="https://gloomyweather.github.io/orpheus/">
@@ -437,15 +437,15 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(
 <div class="wrap" id="app">
   <div class="topline">
     <div class="brand">orpheus</div>
-    <div class="hright"><span class="hname" id="hdrPreset">свой звук</span><span class="hsep" aria-hidden="true">·</span><span class="status" id="status" role="status">тихо</span></div>
+    <div class="hright"><span class="hname" id="hdrPreset">custom sound</span><span class="hsep" aria-hidden="true">·</span><span class="status" id="status" role="status">quiet</span></div>
   </div>
 
   <div class="transport">
     <button type="button" class="play" id="play" aria-pressed="false">
       <svg viewBox="0 0 20 20" aria-hidden="true"><path id="playIcon" d="M5 3.2v13.6L16.5 10z"/></svg>
-      <span id="playLabel">играть</span>
+      <span id="playLabel">play</span>
     </button>
-    <button type="button" class="moon" id="moon" aria-haspopup="true" aria-expanded="false" aria-controls="sleepPop" aria-label="таймер сна" title="таймер сна">
+    <button type="button" class="moon" id="moon" aria-haspopup="true" aria-expanded="false" aria-controls="sleepPop" aria-label="sleep timer" title="sleep timer">
       <svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle class="rb" cx="24" cy="24" r="22.5"/><circle class="rp" cx="24" cy="24" r="22.5"/></svg>
       <svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 1 1 10.7 3.5a6.7 6.7 0 0 0 9.8 9.8z"/></svg>
       <span class="mb" hidden></span>
@@ -454,52 +454,52 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(
   </div>
 
   <div class="block first" id="presetBlock">
-    <div class="prows" id="presets" role="group" aria-label="настроения"></div>
+    <div class="prows" id="presets" role="group" aria-label="moods"></div>
     <p class="pdesc" id="presetDesc"></p>
     <div class="acts">
       <button type="button" class="btn main" id="randomAll">
         <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="14" height="14" rx="3"/><circle cx="6.2" cy="6.2" r=".6" fill="currentColor"/><circle cx="11.8" cy="6.2" r=".6" fill="currentColor"/><circle cx="9" cy="9" r=".6" fill="currentColor"/><circle cx="6.2" cy="11.8" r=".6" fill="currentColor"/><circle cx="11.8" cy="11.8" r=".6" fill="currentColor"/></svg>
-        <span>случайно</span>
+        <span>random</span>
       </button>
-      <button type="button" class="btn quiet" id="nudge">чуть иначе</button>
-      <button type="button" class="btn quiet" id="undo" hidden disabled>назад</button>
-      <button type="button" class="btn quiet" id="saveOpen" aria-expanded="false" aria-controls="saveForm">сохранить</button>
-      <button type="button" class="btn quiet more" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="morePop" aria-label="ещё" title="живой режим, переход">
+      <button type="button" class="btn quiet" id="nudge">a bit different</button>
+      <button type="button" class="btn quiet" id="undo" hidden disabled>undo</button>
+      <button type="button" class="btn quiet" id="saveOpen" aria-expanded="false" aria-controls="saveForm">save</button>
+      <button type="button" class="btn quiet more" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="morePop" aria-label="more" title="live mode, transition">
         <svg viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="9" r="1.3"/><circle cx="9" cy="9" r="1.3"/><circle cx="14.5" cy="9" r="1.3"/></svg>
       </button>
     </div>
     <form class="saveform" id="saveForm" autocomplete="off" hidden>
-      <input type="text" id="saveName" maxlength="24" placeholder="название" aria-label="название своего пресета">
-      <button type="submit" class="btn main" id="saveOk">ок</button>
-      <button type="button" class="btn quiet" id="saveCancel">отмена</button>
+      <input type="text" id="saveName" maxlength="24" placeholder="name" aria-label="name of your preset">
+      <button type="submit" class="btn main" id="saveOk">ok</button>
+      <button type="button" class="btn quiet" id="saveCancel">cancel</button>
     </form>
   </div>
 
-  <section class="stage" id="stage" aria-label="визуализация"></section>
+  <section class="stage" id="stage" aria-label="visualization"></section>
   <div class="vizbar">
     <button type="button" class="vizbtn" id="vizOpen" hidden>
-      <span>на весь экран</span>
+      <span>fullscreen</span>
       <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 5V1.5H5M9 1.5h3.5V5M12.5 9v3.5H9M5 12.5H1.5V9"/></svg>
     </button>
   </div>
 
-  <section class="macros" id="macros" aria-label="основные ручки"></section>
+  <section class="macros" id="macros" aria-label="main controls"></section>
 
   <div class="fine-head">
     <button type="button" class="fine-toggle" id="fineToggle" aria-expanded="false" aria-controls="fine">
-      <span>тонкая настройка</span>
+      <span>fine tuning</span>
       <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5l4.5 4.5L11.5 5"/></svg>
     </button>
   </div>
   <div class="fine" id="fine"><div class="fine-in"><div class="grid" id="groups"></div></div></div>
 </div>
 
-<div class="mini" id="mini" role="region" aria-label="мини-плеер">
-  <button type="button" class="mplay" id="miniPlay" aria-pressed="false" aria-label="играть">
+<div class="mini" id="mini" role="region" aria-label="mini player">
+  <button type="button" class="mplay" id="miniPlay" aria-pressed="false" aria-label="play">
     <svg viewBox="0 0 20 20" aria-hidden="true"><path id="miniIcon" d="M5 3.2v13.6L16.5 10z"/></svg>
   </button>
-  <span class="mname" id="miniName">свой звук</span>
-  <button type="button" class="moon sm" id="miniMoon" aria-haspopup="true" aria-expanded="false" aria-controls="sleepPop" aria-label="таймер сна">
+  <span class="mname" id="miniName">custom sound</span>
+  <button type="button" class="moon sm" id="miniMoon" aria-haspopup="true" aria-expanded="false" aria-controls="sleepPop" aria-label="sleep timer">
     <svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle class="rb" cx="24" cy="24" r="22.5"/><circle class="rp" cx="24" cy="24" r="22.5"/></svg>
     <svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 1 1 10.7 3.5a6.7 6.7 0 0 0 9.8 9.8z"/></svg>
     <span class="mb" hidden></span>
@@ -507,18 +507,18 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(
   <div class="mvol" id="miniVolSlot"></div>
 </div>
 
-<div class="pop" id="sleepPop" role="group" aria-label="таймер сна" hidden>
-  <span class="ptitle" id="sleepTitle">таймер сна</span>
+<div class="pop" id="sleepPop" role="group" aria-label="sleep timer" hidden>
+  <span class="ptitle" id="sleepTitle">sleep timer</span>
   <div class="seg" id="sleepSeg" role="radiogroup" aria-labelledby="sleepTitle"></div>
   <span class="left" id="sleepLeft" aria-live="off"></span>
 </div>
 
-<div class="pop" id="morePop" role="group" aria-label="ещё" hidden>
+<div class="pop" id="morePop" role="group" aria-label="more" hidden>
   <div class="sect">
-    <button type="button" class="btn quiet" id="live" aria-pressed="false"><span class="dot" aria-hidden="true"></span><span>живой режим</span></button>
+    <button type="button" class="btn quiet" id="live" aria-pressed="false"><span class="dot" aria-hidden="true"></span><span>live mode</span></button>
   </div>
   <div class="sect">
-    <span class="ptitle" id="transTitle">переход</span>
+    <span class="ptitle" id="transTitle">transition</span>
     <div class="seg row" id="transSeg" role="radiogroup" aria-labelledby="transTitle"></div>
   </div>
 </div>

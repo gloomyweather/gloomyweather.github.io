@@ -515,7 +515,7 @@
 
   // ================================================================ 5. герой
 
-  var MODES = ['lyre', 'river', 'land'], MODE_NAMES = { lyre: 'лира', river: 'река', land: 'пейзаж' };
+  var MODES = ['lyre', 'river', 'land'], MODE_NAMES = { lyre: 'lyre', river: 'river', land: 'landscape' };
 
   // ---------------------------------------------------------------- лира
   var Lyre = {
@@ -750,9 +750,9 @@
         var back = (cols - 1 - x) * spc, tick = Math.floor((back + spc) / 30) !== Math.floor(back / 30);
         if (tick) o.put(x, ay, GH.mid, 3);
       }
-      var lab = 'сейчас';
+      var lab = 'now';
       o.text(cols - lab.length, ay, lab, 3);
-      var mins = Math.round(this.span / 60 * 10) / 10, ll = (mins % 1 ? mins.toFixed(1) : String(mins)) + ' мин';
+      var mins = Math.round(this.span / 60 * 10) / 10, ll = (mins % 1 ? mins.toFixed(1) : String(mins)) + ' min';
       o.text(0, ay, ll, 3);
     }
   };
@@ -1453,7 +1453,7 @@
       }
       // подписи: «вдох» пока круг растёт, «выдох» пока сжимается
       var inhale = this.ph < 0.5, f = Math.sin(this.ph * 2 * Math.PI), a = Math.abs(f);
-      var lab = inhale ? 'вдох' : 'выдох', lt = Math.max(0, Math.round(this.on * (1 + a * 2.6)));
+      var lab = inhale ? 'inhale' : 'exhale', lt = Math.max(0, Math.round(this.on * (1 + a * 2.6)));
       if (lt >= 1) o.text(Math.round(cx - lab.length / 2), Math.round(cy), lab, lt);
     }
   };
@@ -1469,7 +1469,7 @@
       el.insertBefore(cv, el.firstChild);
       this.cv = cv; this.grid = new Grid(cv, true);
       var seg = document.createElement('div');
-      seg.className = 'stg-seg'; seg.setAttribute('role', 'radiogroup'); seg.setAttribute('aria-label', 'вид');
+      seg.className = 'stg-seg'; seg.setAttribute('role', 'radiogroup'); seg.setAttribute('aria-label', 'view');
       var self = this;
       MODES.forEach(function (m, i) {
         if (i) { var sep = document.createElement('span'); sep.className = 'stg-sep'; sep.setAttribute('aria-hidden', 'true'); sep.textContent = '·'; seg.appendChild(sep); }

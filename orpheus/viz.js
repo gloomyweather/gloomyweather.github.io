@@ -381,7 +381,7 @@
   var SCENES = [];
 
   // ---------------------------------------------------------------- туманность
-  SCENES.push({ name: 'туманность', make: function () {
+  SCENES.push({ name: 'nebula', make: function () {
     var cw = (G.cols >> 1) + 2, rows = G.rows;
     var fld = new Float32Array(cw * rows), wrp = new Float32Array(cw * rows);
     var sp = new Sparks(48), ox = rnd(0, 100), oy = rnd(0, 100);
@@ -431,7 +431,7 @@
   } });
 
   // ---------------------------------------------------------------- океан
-  SCENES.push({ name: 'океан', make: function () {
+  SCENES.push({ name: 'ocean', make: function () {
     var NW = 7;
     var wa = new Float32Array(NW), wkx = new Float32Array(NW), wkz = new Float32Array(NW), ww = new Float32Array(NW), wp = new Float32Array(NW), att = new Float32Array(NW);
     for (var k = 0; k < NW; k++) {
@@ -527,7 +527,7 @@
   } });
 
   // ---------------------------------------------------------------- дождь
-  SCENES.push({ name: 'дождь', make: function () {
+  SCENES.push({ name: 'rain', make: function () {
     var MAXD = 800, MAXR = 220;
     var dx = new Float32Array(MAXD), dy = new Float32Array(MAXD), dz = new Float32Array(MAXD), dl = new Float32Array(MAXD), dn = 0;
     var rx = new Float32Array(MAXR), ry = new Float32Array(MAXR), rz = new Float32Array(MAXR), ra = new Float32Array(MAXR), rl = new Float32Array(MAXR), rs = new Uint8Array(MAXR), rn = 0;
@@ -615,7 +615,7 @@
   } });
 
   // ---------------------------------------------------------------- звёзды
-  SCENES.push({ name: 'звёзды', make: function () {
+  SCENES.push({ name: 'stars', make: function () {
     var NS = Math.min(1600, Math.max(120, (G.n / 14) | 0));
     var sx = new Float32Array(NS), sy = new Float32Array(NS), sl = new Uint8Array(NS), sph = new Float32Array(NS), sf = new Float32Array(NS);
     var SPEED = [0.12, 0.32, 0.8];
@@ -703,7 +703,7 @@
   } });
 
   // ---------------------------------------------------------------- интерференция
-  SCENES.push({ name: 'интерференция', make: function () {
+  SCENES.push({ name: 'interference', make: function () {
     var NSRC = 3;
     var ph = new Float32Array(NSRC * 4);
     for (var k = 0; k < ph.length; k++) ph[k] = rnd(0, TAU);
@@ -759,7 +759,7 @@
   } });
 
   // ---------------------------------------------------------------- течение
-  SCENES.push({ name: 'течение', make: function () {
+  SCENES.push({ name: 'current', make: function () {
     // линии тока в «брайлевском» разрешении: 2×4 точки на ячейку
     var NP = Math.min(1100, Math.max(100, (G.n / 13) | 0));
     var SW = G.cols * 2, SH = G.rows * 4;
@@ -828,7 +828,7 @@
   } });
 
   // ---------------------------------------------------------------- сияние
-  SCENES.push({ name: 'сияние', make: function () {
+  SCENES.push({ name: 'aurora', make: function () {
     var cols0 = G.cols;
     var rN = new Float32Array(cols0 * 2 + 2), rF = new Float32Array(cols0 * 2 + 2), dots = new Dots(), mask = new Uint8Array(G.n), sp = new Sparks(24), ox = rnd(0, 100), glow = 0;
     var cBase = new Float32Array(cols0), cBase2 = new Float32Array(cols0), cAmp = new Float32Array(cols0), cAmp2 = new Float32Array(cols0), cH = new Float32Array(cols0);
@@ -939,7 +939,7 @@
   } });
 
   // ---------------------------------------------------------------- тор
-  SCENES.push({ name: 'тор', make: function () {
+  SCENES.push({ name: 'torus', make: function () {
     var zb = new Float32Array(G.n), lum = new Float32Array(G.n);
     var RT = gis('.,-~:;=!*#%@');
     var a = rnd(0, TAU), bb = rnd(0, TAU), lp = rnd(0, TAU), pulse = 0;
@@ -1003,7 +1003,7 @@
   } });
 
   // ---------------------------------------------------------------- рельеф
-  SCENES.push({ name: 'рельеф', make: function () {
+  SCENES.push({ name: 'terrain', make: function () {
     var CW = G.cols + 1, CH = G.rows + 1;
     var H = new Float32Array(CW * CH), Lv = new Int16Array(CW * CH), labels = new Uint8Array(G.n);
     var ox = rnd(0, 100), oy = rnd(0, 100), dirA = rnd(0, TAU);
@@ -1076,7 +1076,7 @@
   } });
 
   // ---------------------------------------------------------------- созвездия
-  SCENES.push({ name: 'созвездия', make: function () {
+  SCENES.push({ name: 'constellations', make: function () {
     var NN = Math.max(22, Math.min(90, (G.n / 190) | 0));
     var nx = new Float32Array(NN), ny = new Float32Array(NN), ns = new Float32Array(NN), nf = new Float32Array(NN), nseed = new Float32Array(NN);
     var bd = new Dots();
@@ -1474,7 +1474,7 @@
     root.className = 'av-root';
     root.setAttribute('role', 'dialog');
     root.setAttribute('aria-modal', 'true');
-    root.setAttribute('aria-label', 'визуализация');
+    root.setAttribute('aria-label', 'visualization');
     root.tabIndex = -1;
     cv = document.createElement('canvas');
     cv.className = 'av-cv';
@@ -1482,10 +1482,10 @@
     var bar = document.createElement('div'); bar.className = 'av-bar';
     nameEl = document.createElement('span'); nameEl.className = 'av-name'; nameEl.setAttribute('aria-live', 'polite');
     var btns = document.createElement('span'); btns.className = 'av-btns';
-    btnNext = document.createElement('button'); btnNext.type = 'button'; btnNext.className = 'av-btn'; btnNext.textContent = 'дальше';
+    btnNext = document.createElement('button'); btnNext.type = 'button'; btnNext.className = 'av-btn'; btnNext.textContent = 'next';
     btnClose = document.createElement('button'); btnClose.type = 'button'; btnClose.className = 'av-btn';
-    btnClose.setAttribute('aria-label', 'закрыть');
-    btnClose.innerHTML = '<span>закрыть</span><span class="av-x" aria-hidden="true">×</span>';
+    btnClose.setAttribute('aria-label', 'close');
+    btnClose.innerHTML = '<span>close</span><span class="av-x" aria-hidden="true">×</span>';
     btns.appendChild(btnNext); btns.appendChild(btnClose);
     bar.appendChild(nameEl); bar.appendChild(btns);
     root.appendChild(cv); root.appendChild(bar);
