@@ -74,7 +74,7 @@
   // ================================================================ глифы
 
   var CHARS = ' .·:-=+*#%@,\'`~^_|/\\()<>oO°•∙x─│╱╲┼═║┃╎¦≈∗╭╮╰╯┌┐└┘├┤┬┴▁▂▃▄▅▆▇█░▒▓▲△∧∩▪▫◦v' +
-    'абвгдежзийклмнопрстуфхцчшщъыьэюя' + 'abcdefghijklmnopqrstuvwxyz0123456789−';
+    'abcdefghijklmnopqrstuvwxyz0123456789−';
   var GL = [];
   (function () { var seen = {}; for (var i = 0; i < CHARS.length; i++) { var c = CHARS[i]; if (!seen[c]) { seen[c] = 1; GL.push(c); } } })();
   var NGF = GL.length;

@@ -52,7 +52,7 @@ window.AMBIENT_SCHEMA = {
     { id: 'tape',     group: 'char', type: 'slider', label: 'tape',    def: 0.15, hint: 'pitch wobble like an old cassette (slow wow + light flutter)' },
     { id: 'warmth',   group: 'char', type: 'slider', label: 'warmth',  def: 0.2,  hint: 'soft tube saturation and a rounded top end' },
     { id: 'binaural', group: 'char', type: 'slider', label: 'beats',   def: 0.0, rare: true, hint: 'binaural beats, audible only on headphones: two quiet tones with a slight frequency difference in the left and right ear' },
-    { id: 'beatRate', group: 'char', type: 'slider', label: 'beat rate', def: 0.3, hint: '0 — 1 hz (deep sleep), 0.3 — ~4 hz (drowsiness, meditation), 0.6 — ~9 hz (calm attention), 1 — 16 hz (focus)' },
+    { id: 'beatRate', group: 'char', type: 'slider', label: 'beat rate', def: 0.3, hint: 'difference between the ears: 0 — 1 hz, 0.3 — ~4 hz, 0.6 — ~9 hz, 1 — 16 hz. effects on the mind are not well proven' },
 
     // вне групп, показывается в шапке
     { id: 'volume', group: null, type: 'slider', label: 'volume', def: 0.7 }
