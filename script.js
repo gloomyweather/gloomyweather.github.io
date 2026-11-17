@@ -348,7 +348,8 @@
       const code = cmd ? cmd.textContent.trim() : "";
       c.push({ id: "go:" + name, group: "projects", label: "go to " + name, hint: String(i + 1), kw: tag, desc: tag, code, run: () => go(p) });
       if (cmd) c.push({ id: "copy:" + name, search: true, label: "copy install command: " + name, hint: "copy", desc: "copies the install commands to your clipboard", code, run: () => copyText(code) });
-      if (src) c.push({ id: "src:" + name, search: true, label: "open source: " + name, hint: "github", desc: src.href.replace("https://", ""), run: () => open(src.href, "_blank", "noopener") });
+      const app = src && src.textContent.trim() === "open";
+      if (src) c.push({ id: "src:" + name, search: true, label: (app ? "open app: " : "open source: ") + name, hint: app ? "app" : "github", desc: src.href.replace("https://", ""), run: () => app ? (location.href = src.href) : open(src.href, "_blank", "noopener") });
       if (shot) c.push({ id: "shot:" + name, search: true, label: "view screenshot: " + name, hint: "view", desc: "opens it full size", run: () => shot.click() });
     });
     c.push({ id: "clawd", search: true, label: "say hi to clawd", hint: "hi", kw: "claude clawd mascot crab", desc: "a small visitor", run: clawd });

@@ -21,7 +21,7 @@
 <link rel="preload" href="fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="style.css?v=5">
-<script src="script.js?v=1" defer></script>
+<script src="script.js?v=2" defer></script>
 <script src="demo.js?v=1" defer></script>
 </head>
 <body>
@@ -30,7 +30,7 @@
 <div class="page" id="top">
 <header class="top">
   <a href="./">gloomyweather</a>
-  <nav aria-label="sections"><a href="#omarchy">omarchy</a><a href="https://github.com/gloomyweather">github</a></nav>
+  <nav aria-label="sections"><a href="#omarchy">omarchy</a><a href="#web">web</a><a href="https://github.com/gloomyweather">github</a></nav>
 </header>
 
 <main>
@@ -50,10 +50,10 @@
   <p class="prompt" aria-hidden="true"><span style="--n:8">$ whoami</span></p>
   <h1><span class="type">gloomyweather</span><span class="cur" aria-hidden="true"></span></h1>
   <p class="lead">small, quiet tools for the terminal and omarchy.</p>
-  <p class="more">each one does one thing and stays out of the way. all of them run on linux
+  <p class="more">each one does one thing and stays out of the way. most of them run on linux
   and plug into <a href="https://omarchy.org">omarchy</a>: a hotkey, the launcher, the bar,
   the current theme.</p>
-  <p class="stats"><span><b data-n="6">6</b> projects</span><span><b data-n="30">30</b> wallpapers</span><span><b data-n="1">1</b> font</span><span><b data-n="0">0</b> trackers</span></p>
+  <p class="stats"><span><b data-n="7">7</b> projects</span><span><b data-n="30">30</b> wallpapers</span><span><b data-n="1">1</b> font</span><span><b data-n="0">0</b> trackers</span></p>
 </section>
 
 <nav class="index" aria-label="projects">
@@ -64,6 +64,7 @@
     <li><a href="#jot"><span class="n">04</span><span class="name">jot</span><span class="tag">quick notes for the terminal.</span></a></li>
     <li><a href="#ember"><span class="n">05</span><span class="name">ember</span><span class="tag">a black-and-white omarchy theme with one orange accent.</span></a></li>
     <li><a href="#mono"><span class="n">06</span><span class="name">mono</span><span class="tag">a grayscale omarchy theme with real colors in the terminal.</span></a></li>
+    <li><a href="#orpheus"><span class="n">07</span><span class="name">orpheus</span><span class="tag">endless generative ambient in the browser.</span></a></li>
   </ol>
 </nav>
 
@@ -218,6 +219,27 @@ omarchy theme set ember</pre>
     <pre class="cmd">omarchy theme install https://github.com/gloomyweather/omarchy-mono-theme
 omarchy theme set mono</pre>
     <p class="meta"><span>theme · mit</span><span><a href="https://github.com/gloomyweather/omarchy-mono-theme">source</a></span></p>
+  </article>
+</section>
+
+<section class="group" id="web" aria-labelledby="web-h">
+  <header><h2 id="web-h">web</h2><p>things that run in the browser.</p></header>
+
+  <article class="project" id="orpheus">
+    <h3><span class="n">07</span>orpheus<span class="mark pulse" aria-hidden="true">∿</span></h3>
+    <p class="tagline">endless generative ambient in the browser.</p>
+    <figure class="win">
+      <figcaption><span>orpheus</span><span>the lyre plays along</span></figcaption>
+      <img class="shot" src="orpheus.webp" width="1424" height="802" loading="lazy" decoding="async" alt="orpheus in dark mode: a play button, mood presets grouped by purpose, four big knobs and an ascii lyre whose strings follow the chord that is playing">
+    </figure>
+    <ul>
+      <li>a pad, sparse notes, noise and rain, all synthesized live with web audio. no samples, no loops, never the same twice.</li>
+      <li>eighteen moods for focus, sleep and rest, four big knobs, and every parameter one click away.</li>
+      <li>slow harmony, an open low register, a soft top end: easy to ignore, easy to listen to.</li>
+      <li>an ascii lyre that plays along, a scrolling score, a landscape for each mood. a sleep timer fades the sound and the screen together.</li>
+      <li>the interface is in russian. everything runs in your browser; nothing is sent anywhere.</li>
+    </ul>
+    <p class="meta"><span>html · js · web audio</span><span><a href="orpheus/">open</a></span></p>
   </article>
 </section>
 </main>

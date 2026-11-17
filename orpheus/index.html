@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>orpheus</title>
+<meta name="description" content="бесконечный генеративный эмбиент в браузере: пресеты по настроению, живая настройка, ascii-лира.">
+<meta property="og:title" content="orpheus">
+<meta property="og:description" content="endless generative ambient in the browser.">
+<meta property="og:url" content="https://gloomyweather.github.io/orpheus/">
+<meta property="og:type" content="website">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0c0e" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: "JetBrains Mono"; src: url("../fonts/JetBrainsMono-Regular.woff2") format("woff2"); font-weight: 400 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("../fonts/JetBrainsMono-Bold.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: swap; }
+html, body { margin: 0; }
+</style>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #0c0d0f;
+  --muted: #646a73;
+  --line: #e1e4e8;
+  --surface: #f3f4f6;
+  --accent: #1558f0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0c0e;
+    --fg: #f3f4f6;
+    --muted: #9aa1ab;
+    --line: #272a2f;
+    --surface: #17191c;
+    --accent: #5c8dff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0c0e;
+  --fg: #f3f4f6;
+  --muted: #9aa1ab;
+  --line: #272a2f;
+  --surface: #17191c;
+  --accent: #5c8dff;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg) }
+
+* { box-sizing: border-box; }
+body {
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.45;
+  font-feature-settings: "liga" 0;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap {
+  max-width: 1040px;
+  margin-inline: auto;
+  padding-block: 24px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* header */
+:root { --track: color-mix(in srgb, var(--line) 45%, var(--muted)); --text-2: color-mix(in srgb, var(--fg) 74%, var(--bg)); }
+.wrap { position: relative; z-index: 1; }
+.topline { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.brand { font-weight: 600; font-size: 14px; letter-spacing: 0.02em; }
+.hright { display: flex; align-items: baseline; gap: 8px; min-width: 0; color: var(--muted); font-size: 13px; }
+.hname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg); }
+.hsep { flex: none; }
+.status { flex: none; color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 8px; transition: color .4s var(--ease); }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--muted); align-self: center; transition: background-color .4s var(--ease), border-color .4s var(--ease); }
+.status.on::before { animation: blink 2.4s ease-in-out infinite; }
+.status.on { color: var(--accent); }
+.status.on::before { background: var(--accent); border-color: var(--accent); }
+
+.transport { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 12px; margin-top: 20px; }
+.play {
+  display: inline-flex; align-items: center; gap: 12px;
+  height: 56px; padding: 0 28px 0 22px;
+  border-radius: 28px; border: 2px solid var(--accent);
+  background: var(--accent); color: var(--bg);
+  font-size: 15px; font-weight: 600;
+  transition: background-color .35s var(--ease), color .35s var(--ease), transform .2s var(--ease);
+}
+.play:hover { transform: scale(1.03); }
+.play:active { transform: scale(.96); }
+.play[aria-pressed="true"] { animation: breathe 4.5s ease-in-out infinite; }
+.play svg { transition: transform .35s var(--ease); }
+.play:hover svg { transform: scale(1.12); }
+.play svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
+.play[aria-pressed="true"] { background: transparent; color: var(--accent); }
+.play:focus-visible { outline-offset: 3px; }
+.vol { flex: 1 1 200px; max-width: 380px; min-width: 0; margin-left: 28px; }
+@media (max-width: 719px) { .vol { margin-left: 0; max-width: none; } }
+
+/* луна: таймер сна */
+.moon {
+  position: relative; display: grid; place-items: center; flex: none;
+  width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted);
+  transition: color .25s var(--ease), background-color .25s var(--ease), transform .2s var(--ease);
+}
+.moon::after { content: ""; position: absolute; inset: -4px; }
+.moon:hover { color: var(--fg); background: var(--surface); }
+.moon:active { transform: scale(.94); }
+.moon[aria-expanded="true"] { background: var(--surface); color: var(--fg); }
+.moon .ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.moon .ring circle { fill: none; stroke-width: 1.5; }
+.moon .rb { stroke: var(--line); transition: stroke .3s var(--ease); }
+.moon .rp { stroke: var(--accent); stroke-linecap: round; opacity: 0; stroke-dasharray: 141.4; stroke-dashoffset: 0; transition: opacity .3s var(--ease), stroke-dashoffset 1s linear; }
+.moon.on { color: var(--accent); }
+.moon.on .rp { opacity: 1; }
+.moon .mi { position: relative; width: 20px; height: 20px; }
+.moon .mb {
+  position: absolute; right: -5px; bottom: -3px; min-width: 18px; height: 15px; padding: 0 4px; border-radius: 8px;
+  background: var(--accent); color: var(--bg); font-size: 10px; line-height: 15px; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums;
+}
+.moon.sm { width: 40px; height: 40px; }
+
+/* sections */
+.block { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+.block.first { border-top: 0; padding-top: 0; margin-top: 32px; }
+.prows { display: flex; flex-direction: column; gap: 10px; }
+.prow { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: 12px; }
+.plabel { color: var(--muted); font-size: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.chip {
+  position: relative; height: 34px; padding: 0 14px; border-radius: 17px; font-size: 13px; flex: none;
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  border: 1px solid var(--line); background: transparent; color: var(--fg);
+  transition: background-color .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease), transform .2s var(--ease);
+}
+.chip::before { content: attr(data-g); color: var(--muted); display: inline-block; min-width: 1ch; text-align: center; transition: color .25s var(--ease); }
+.chip::after { content: ""; position: absolute; inset: -4px -2px; }
+.chip:active, .btn:active, .seg button:active { transform: scale(.95); }
+.chip:hover { background: var(--surface); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 500; }
+.chip[aria-pressed="true"]::before { color: var(--bg); opacity: .75; }
+/* свои пресеты: пунктирная рамка, маленький крестик */
+.chipx {
+  display: inline-flex; align-items: center; height: 34px; border-radius: 17px; flex: none;
+  border: 1px dashed var(--muted); color: var(--fg);
+  transition: background-color .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease);
+}
+.chipx:hover { background: var(--surface); }
+.chipx .chip, .chipx .chip:hover, .chipx .chip[aria-pressed="true"] {
+  height: 32px; padding: 0 4px 0 13px; border: 0; border-radius: 16px 0 0 16px; background: transparent; color: inherit; font-weight: inherit;
+}
+.chipx .chip[aria-pressed="true"]::before { color: inherit; }
+.chipx.on { background: var(--accent); border-style: solid; border-color: var(--accent); color: var(--bg); font-weight: 500; }
+.chipx.on .chip::before { color: var(--bg); opacity: .75; }
+.cdel {
+  position: relative; display: grid; place-items: center; width: 28px; height: 32px; padding: 0;
+  border: 0; border-radius: 0 16px 16px 0; background: transparent; color: var(--muted); font-size: 12px;
+  transition: color .25s var(--ease);
+}
+.cdel::after { content: ""; position: absolute; inset: -4px -2px; }
+.cdel svg { width: 10px; height: 10px; }
+.cdel:hover { color: var(--fg); }
+.chipx.on .cdel { color: var(--bg); }
+.cdel.ask { width: auto; padding: 0 12px 0 6px; color: var(--accent); font-weight: 500; }
+.chipx.on .cdel.ask { color: var(--bg); }
+@media (max-width: 719px) {
+  .prow { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .prow .chips {
+    flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+    margin-inline: -16px; padding: 3px 16px;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 20px), transparent 100%);
+  }
+  .prow .chips::-webkit-scrollbar { display: none; }
+}
+
+.pdesc { margin: 14px 0 0; min-height: 1.45em; font-size: 14px; color: var(--text-2); transition: opacity .18s var(--ease); }
+.pdesc.out { opacity: 0; }
+@media (max-width: 719px) { .pdesc { font-size: 13px; min-height: 2.9em; } }
+.acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
+.acts .more { margin-left: auto; }
+.dot {
+  width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--muted); flex: none;
+  transition: background-color .4s var(--ease), border-color .4s var(--ease);
+}
+.btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.btn[aria-pressed="true"] .dot { background: var(--accent); border-color: var(--accent); }
+.playing .btn[aria-pressed="true"] .dot { animation: blink 2.4s ease-in-out infinite; }
+.btn:disabled { opacity: .35; cursor: default; }
+.btn:disabled:hover { background: transparent; }
+.btn:disabled:active { transform: none; }
+.btn[aria-expanded="true"] { background: var(--surface); }
+#undo:not([hidden]) { animation: fadein .5s var(--ease) backwards; }
+.saveform { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; animation: rise .4s var(--ease) backwards; }
+.saveform input {
+  flex: 1 1 160px; min-width: 0; max-width: 320px; height: 40px; padding: 0 16px; border-radius: 20px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--fg); transition: border-color .25s var(--ease);
+}
+.saveform input:hover { border-color: var(--muted); }
+.saveform input:focus-visible { outline: none; border-color: var(--accent); }
+.saveform input::placeholder { color: var(--muted); }
+.btn {
+  height: 40px; padding: 0 18px; border-radius: 20px;
+  border: 1px solid var(--fg); background: transparent; color: var(--fg);
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background-color .25s var(--ease), opacity .25s var(--ease), transform .2s var(--ease);
+}
+.btn svg, .dice svg { transition: transform .5s var(--ease); }
+.btn:hover svg, .dice:hover svg { transform: rotate(90deg); }
+.btn:active svg, .dice:active svg { transform: rotate(270deg) scale(.85); transition-duration: .15s; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn:hover { background: var(--surface); }
+.btn.main { background: var(--fg); color: var(--bg); font-weight: 500; }
+.btn.main:hover { opacity: .88; }
+.btn.quiet { border-color: var(--line); }
+.btn.more { width: 40px; padding: 0; justify-content: center; font-size: 16px; letter-spacing: 0; }
+.btn.more:hover svg { transform: none; }
+@media (max-width: 719px) { .acts .btn:not(.more) { padding: 0 14px; } }
+
+/* поповеры */
+.pop {
+  position: fixed; z-index: 30; left: 0; top: 0; width: 292px; max-width: calc(100vw - 32px);
+  padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+  animation: popin .18s var(--ease) backwards;
+}
+.pop .ptitle { display: block; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.pop .seg { display: flex; flex-wrap: nowrap; }
+.pop .seg button { flex: 1 1 0; padding: 0 4px; white-space: nowrap; }
+.pop .btn { width: 100%; justify-content: flex-start; }
+.pop .sect + .sect { margin-top: 14px; }
+.pop .left { display: block; margin-top: 12px; min-height: 1.45em; }
+@keyframes popin { from { opacity: 0; transform: translateY(4px); } }
+
+/* стадия */
+.stage { position: relative; display: block; height: 168px; margin-top: 28px; }
+@media (min-width: 720px) { .stage { height: 220px; } }
+.vizbar { display: flex; justify-content: flex-end; margin-top: 2px; }
+.vizbtn {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 4px 0 12px; border: 0; background: transparent;
+  color: var(--muted); font-size: 13px; border-radius: 20px; transition: color .25s var(--ease);
+}
+.vizbtn:hover { color: var(--accent); }
+.vizbtn svg { width: 14px; height: 14px; flex: none; transition: transform .35s var(--ease); }
+.vizbtn:hover svg { transform: scale(1.18); }
+
+/* макро */
+.macros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 32px; margin-top: 20px; }
+@media (max-width: 719px) { .macros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 24px; } }
+
+/* тонкая настройка */
+.fine-head { margin-top: 20px; border-top: 1px solid var(--line); }
+.fine-toggle {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; height: 48px; padding: 0; border: 0; background: transparent;
+  color: var(--muted); font-size: 13px; text-align: left; transition: color .25s var(--ease);
+}
+.fine-toggle:hover, .fine-toggle[aria-expanded="true"] { color: var(--fg); }
+.fine-toggle svg { width: 14px; height: 14px; transition: transform .35s var(--ease); }
+.fine-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.fine { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .4s var(--ease), visibility 0s linear .4s; }
+.fine.open { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .4s var(--ease), visibility 0s; }
+.fine > .fine-in { min-height: 0; overflow: hidden; margin-inline: -8px; padding-inline: 8px; }
+
+/* группы */
+.grid {
+  display: grid; gap: 28px 48px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+  padding-top: 8px; padding-bottom: 8px;
+}
+.group { min-width: 0; border-top: 1px solid var(--line); padding-top: 12px; }
+.ghead { display: flex; align-items: center; justify-content: space-between; min-height: 36px; }
+.gname { font-weight: 600; font-size: 14px; margin: 0; }
+.gtools { display: flex; align-items: center; margin-right: -10px; }
+.dice, .lock {
+  width: 40px; height: 40px; margin: -2px 0; display: grid; place-items: center; padding: 0;
+  border: 0; background: transparent; color: var(--muted); border-radius: 50%;
+  transition: color .25s var(--ease), background-color .25s var(--ease);
+}
+.dice:hover, .lock:hover { color: var(--accent); background: var(--surface); }
+.dice:disabled { opacity: .3; cursor: default; }
+.dice:disabled:hover { color: var(--muted); background: transparent; }
+.dice svg, .lock svg { width: 18px; height: 18px; }
+.lock[aria-pressed="true"] { color: var(--accent); }
+.group.locked .gname { color: var(--muted); }
+.gname { transition: color .3s var(--ease); }
+.controls { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+
+/* слайдеры с ascii-дорожкой */
+.slider { min-width: 0; }
+.shead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.shead label { color: var(--muted); font-size: 13px; }
+.shead label .tag { margin-left: 8px; font-size: 11px; }
+.shead output { font-variant-numeric: tabular-nums; font-size: 13px; min-width: 3ch; text-align: right; }
+.rng { --thumb: 18px; position: relative; height: 40px; margin-top: -4px; }
+@media (pointer: coarse) { .rng { --thumb: 22px; } }
+.atrack {
+  position: absolute; left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2); top: 0; bottom: 0;
+  overflow: hidden; white-space: pre; font-size: 14px; line-height: 40px; color: var(--track);
+  pointer-events: none; user-select: none; -webkit-user-select: none;
+}
+.atrack .af { color: var(--accent); }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  position: absolute; inset: 0; z-index: 1; display: block; width: 100%; height: 100%; margin: 0; padding: 0;
+  background: transparent; cursor: pointer;
+  touch-action: pan-y;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 40px; background: transparent; border: 0; }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: var(--thumb); height: var(--thumb); border-radius: 50%; margin-top: calc((40px - var(--thumb)) / 2);
+  background: var(--accent); border: 0;
+  transition: transform .2s var(--ease);
+}
+input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.15); }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.35); }
+input[type="range"]:hover::-moz-range-thumb { transform: scale(1.15); }
+input[type="range"]:active::-moz-range-thumb { transform: scale(1.35); }
+input[type="range"]::-moz-range-track { height: 40px; background: transparent; border: 0; }
+input[type="range"]::-moz-range-progress { background: transparent; }
+input[type="range"]::-moz-range-thumb { width: var(--thumb); height: var(--thumb); border-radius: 50%; background: var(--accent); border: 0; transition: transform .2s var(--ease); }
+input[type="range"]:focus-visible { outline: none; }
+input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent); }
+input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent); }
+
+/* селекты */
+.field { min-width: 0; padding-block: 6px; }
+.field > .flabel { display: block; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+.seg { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.seg button {
+  height: 40px; min-width: 0; padding: 0; border-radius: 8px;
+  border: 1px solid var(--line); background: transparent; font-size: 13px;
+  transition: background-color .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease), transform .2s var(--ease);
+}
+.seg button:hover { background: var(--surface); }
+.seg button[aria-checked="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 500; }
+.seg.row { display: flex; flex-wrap: wrap; }
+.seg.row button { padding: 0 12px; }
+.sel {
+  width: 100%; height: 42px; padding: 0 36px 0 12px; border-radius: 8px;
+  border: 1px solid var(--line); background-color: var(--bg); color: var(--fg);
+  -webkit-appearance: none; appearance: none;
+  text-overflow: ellipsis;
+  transition: border-color .25s var(--ease);
+}
+.sel:hover { border-color: var(--muted); }
+.selwrap { position: relative; }
+.selwrap::after {
+  content: ""; position: absolute; right: 15px; top: 50%; width: 7px; height: 7px; margin-top: -6px;
+  border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted);
+  transform: rotate(45deg); pointer-events: none;
+}
+.left { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+/* мини-плеер (телефон) */
+.mini { display: none; }
+@media (max-width: 719px) {
+  .wrap { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
+  .mini {
+    display: flex; align-items: center; gap: 10px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    background: color-mix(in srgb, var(--bg) 94%, transparent); border-top: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    transform: translateY(100%); visibility: hidden;
+    transition: transform .35s var(--ease), visibility 0s linear .35s;
+  }
+  .mini.show { transform: none; visibility: visible; transition: transform .35s var(--ease), visibility 0s; }
+}
+.mplay {
+  display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border-radius: 50%;
+  border: 2px solid var(--accent); background: var(--accent); color: var(--bg);
+  transition: background-color .35s var(--ease), color .35s var(--ease), transform .2s var(--ease);
+}
+.mplay:active { transform: scale(.94); }
+.mplay[aria-pressed="true"] { background: transparent; color: var(--accent); }
+.mplay svg { width: 18px; height: 18px; fill: currentColor; }
+.mname { flex: 1 1 0; min-width: 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mvol { flex: none; width: 84px; }
+.mvol .rng { margin-top: 0; }
+
+/* motion */
+:root { --ease: cubic-bezier(.2, .7, .2, 1); }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes fadein { from { opacity: 0; } }
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+  50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent) 14%, transparent); }
+}
+@keyframes blink { 50% { opacity: .35; } }
+.topline, .transport, #presetBlock, .stage, .vizbar, .macros, .fine-head { animation: rise .7s var(--ease) backwards; }
+.transport { animation-delay: .06s; }
+#presetBlock { animation-delay: .12s; }
+.stage, .vizbar { animation-delay: .18s; }
+.macros { animation-delay: .24s; }
+.fine-head { animation-delay: .3s; }
+.stage { transition: opacity .8s var(--ease); opacity: .6; }
+.playing .stage { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* широкие экраны (планшет в альбомной ориентации, ноутбук): две колонки — управление слева, сцена справа */
+@media (min-width: 1000px) {
+  .wrap {
+    max-width: 1200px; display: grid; column-gap: 64px; align-items: start;
+    grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+    grid-template-areas: "top top" "tr st" "pre st" "pre vb" "mac mac" "fh fh" "fi fi";
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .topline { grid-area: top; }
+  .transport { grid-area: tr; }
+  #presetBlock { grid-area: pre; margin-top: 28px; }
+  .stage { grid-area: st; align-self: stretch; height: auto; min-height: 340px; margin-top: 20px; }
+  .vizbar { grid-area: vb; }
+  .macros { grid-area: mac; margin-top: 28px; }
+  .fine-head { grid-area: fh; }
+  .fine { grid-area: fi; }
+  .vol { max-width: none; }
+  .prow { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .prows { gap: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="topline">
+    <div class="brand">orpheus</div>
+    <div class="hright"><span class="hname" id="hdrPreset">свой звук</span><span class="hsep" aria-hidden="true">·</span><span class="status" id="status" role="status">тихо</span></div>
+  </div>
+
+  <div class="transport">
+    <button type="button" class="play" id="play" aria-pressed="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path id="playIcon" d="M5 3.2v13.6L16.5 10z"/></svg>
+      <span id="playLabel">играть</span>
+    </button>
+    <button type="button" class="moon" id="moon" aria-haspopup="true" aria-expanded="false" aria-controls="sleepPop" aria-label="таймер сна" title="таймер сна">
+      <svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle class="rb" cx="24" cy="24" r="22.5"/><circle class="rp" cx="24" cy="24" r="22.5"/></svg>
+      <svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 1 1 10.7 3.5a6.7 6.7 0 0 0 9.8 9.8z"/></svg>
+      <span class="mb" hidden></span>
+    </button>
+    <div class="vol" id="volumeSlot"></div>
+  </div>
+
+  <div class="block first" id="presetBlock">
+    <div class="prows" id="presets" role="group" aria-label="настроения"></div>
+    <p class="pdesc" id="presetDesc"></p>
+    <div class="acts">
+      <button type="button" class="btn main" id="randomAll">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="14" height="14" rx="3"/><circle cx="6.2" cy="6.2" r=".6" fill="currentColor"/><circle cx="11.8" cy="6.2" r=".6" fill="currentColor"/><circle cx="9" cy="9" r=".6" fill="currentColor"/><circle cx="6.2" cy="11.8" r=".6" fill="currentColor"/><circle cx="11.8" cy="11.8" r=".6" fill="currentColor"/></svg>
+        <span>случайно</span>
+      </button>
+      <button type="button" class="btn quiet" id="nudge">чуть иначе</button>
+      <button type="button" class="btn quiet" id="undo" hidden disabled>назад</button>
+      <button type="button" class="btn quiet" id="saveOpen" aria-expanded="false" aria-controls="saveForm">сохранить</button>
+      <button type="button" class="btn quiet more" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="morePop" aria-label="ещё" title="живой режим, переход">
+        <svg viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="9" r="1.3"/><circle cx="9" cy="9" r="1.3"/><circle cx="14.5" cy="9" r="1.3"/></svg>
+      </button>
+    </div>
+    <form class="saveform" id="saveForm" autocomplete="off" hidden>
+      <input type="text" id="saveName" maxlength="24" placeholder="название" aria-label="название своего пресета">
+      <button type="submit" class="btn main" id="saveOk">ок</button>
+      <button type="button" class="btn quiet" id="saveCancel">отмена</button>
+    </form>
+  </div>
+
+  <section class="stage" id="stage" aria-label="визуализация"></section>
+  <div class="vizbar">
+    <button type="button" class="vizbtn" id="vizOpen" hidden>
+      <span>на весь экран</span>
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 5V1.5H5M9 1.5h3.5V5M12.5 9v3.5H9M5 12.5H1.5V9"/></svg>
+    </button>
+  </div>
+
+  <section class="macros" id="macros" aria-label="основные ручки"></section>
+
+  <div class="fine-head">
+    <button type="button" class="fine-toggle" id="fineToggle" aria-expanded="false" aria-controls="fine">
+      <span>тонкая настройка</span>
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5l4.5 4.5L11.5 5"/></svg>
+    </button>
+  </div>
+  <div class="fine" id="fine"><div class="fine-in"><div class="grid" id="groups"></div></div></div>
+</div>
+
+<div class="mini" id="mini" role="region" aria-label="мини-плеер">
+  <button type="button" class="mplay" id="miniPlay" aria-pressed="false" aria-label="играть">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path id="miniIcon" d="M5 3.2v13.6L16.5 10z"/></svg>
+  </button>
+  <span class="mname" id="miniName">свой звук</span>
+  <button type="button" class="moon sm" id="miniMoon" aria-haspopup="true" aria-expanded="false" aria-controls="sleepPop" aria-label="таймер сна">
+    <svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle class="rb" cx="24" cy="24" r="22.5"/><circle class="rp" cx="24" cy="24" r="22.5"/></svg>
+    <svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 1 1 10.7 3.5a6.7 6.7 0 0 0 9.8 9.8z"/></svg>
+    <span class="mb" hidden></span>
+  </button>
+  <div class="mvol" id="miniVolSlot"></div>
+</div>
+
+<div class="pop" id="sleepPop" role="group" aria-label="таймер сна" hidden>
+  <span class="ptitle" id="sleepTitle">таймер сна</span>
+  <div class="seg" id="sleepSeg" role="radiogroup" aria-labelledby="sleepTitle"></div>
+  <span class="left" id="sleepLeft" aria-live="off"></span>
+</div>
+
+<div class="pop" id="morePop" role="group" aria-label="ещё" hidden>
+  <div class="sect">
+    <button type="button" class="btn quiet" id="live" aria-pressed="false"><span class="dot" aria-hidden="true"></span><span>живой режим</span></button>
+  </div>
+  <div class="sect">
+    <span class="ptitle" id="transTitle">переход</span>
+    <div class="seg row" id="transSeg" role="radiogroup" aria-labelledby="transTitle"></div>
+  </div>
+</div>
+
+<script src="schema.js" charset="utf-8"></script>
+<script src="presets.js" charset="utf-8"></script>
+<script src="engine.js" charset="utf-8"></script>
+<script src="viz.js" charset="utf-8"></script>
+<script src="stage.js" charset="utf-8"></script>
+<script src="ui.js" charset="utf-8"></script>
+
+</body>
+</html>
